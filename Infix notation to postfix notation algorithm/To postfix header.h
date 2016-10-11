@@ -27,6 +27,9 @@ main_to_postfix_function::main_to_postfix_function()
 	while (cin >> data)
 	{
 		to_postfix();
+		data.clear();
+		output.clear();
+		oper.clear();
 		cout << "Enter a infix form(EOF to terminate): ";
 	}
 }
