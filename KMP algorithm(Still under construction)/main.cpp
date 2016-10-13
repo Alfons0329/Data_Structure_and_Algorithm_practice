@@ -14,6 +14,5 @@ using namespace std;
 int main()
 {
 	kmp_functions kmp;
-	system("pause");
 	return 0;
 }
