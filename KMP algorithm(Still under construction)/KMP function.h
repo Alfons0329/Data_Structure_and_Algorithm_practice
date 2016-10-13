@@ -14,13 +14,20 @@ class kmp_functions
 {
 public:
 	kmp_functions();
+	bool match;
+	int match_pos;
 	void kmp_exec();
 	string sentence, pat; //fail_func_str;
 	vector<int>fail_func_int, fail_func_int_from_minus_one;
 	void fail_function();
 	void show_result();
+	void kmp_str_match();
 };
 kmp_functions::kmp_functions()
+{
+	kmp_exec();
+}
+void kmp_functions::kmp_exec()
 {
 
 	cout << "Enter a sentence for KMP algorithm(EOF to terminate) .: ";
@@ -31,15 +38,14 @@ kmp_functions::kmp_functions()
 		fail_func_int_from_minus_one.clear();
 		cout << "Enter a pattern to find.: ";
 		cin >> pat;
-		kmp_exec();
+		fail_function();
+		show_result();
+		kmp_str_match();
 		cout << "\nEnter a sentence for KMP algorithm(EOF to terminate) .: ";
+
 	}
 
-}
-void kmp_functions::kmp_exec()
-{
-	fail_function();
-	show_result();
+
 }
 void kmp_functions::fail_function()
 {
@@ -50,15 +56,11 @@ void kmp_functions::fail_function()
 	{
 		fail_func_int[i] = 0;
 		i++;
-		//cout << i << " ";
 	}
-	cout << endl;
 	while (i < pat.size())
 	{
-		//system("pause");
 		if (pat[j] == pat[i])
 		{
-			//cout << "same" << endl;
 			fail_func_int[i] = j + 1;
 			i++;
 			j++;
@@ -68,7 +70,7 @@ void kmp_functions::fail_function()
 			while (pat[j] != pat[i])
 			{
 				if (!j)//boundary check if j goes to the LHS most
-				{				
+				{
 					j = 0;
 					i++;
 					break;
@@ -87,14 +89,58 @@ void kmp_functions::fail_function()
 			}
 		}
 	}
-	//just for easier to output loooool;
 	for (int k = 0; k < fail_func_int.size(); k++)
 	{
 		fail_func_int_from_minus_one.push_back(fail_func_int[k] - 1);
 	}
 }
+void kmp_functions::kmp_str_match()
+{
+	match = false, match_pos = 0;
+	int i = 0, j = 0; //i for sentence and j for pattern
+	while (i < sentence.size() && j < pat.size())
+	{
+		
+		if (sentence[i] == pat[j])
+		{
+			i++;
+			j++;
+		}
+		else
+		{
+			if (j)
+			{
+				j = fail_func_int[j - 1];
+			}
+			else
+			{
+				i++;  //no previous one can be used for re-locate j 's position
+			}
+		}
+		if (j == pat.size() - 1)
+		{
+			match = true;
+			break;
+		}
+		if (i == sentence.size() - 1 && j != pat.size() - 1)
+		{
+			match = false;
+			break;
+		}
+	}
+	if (match)
+	{
+		cout << "\nPattern match in sentence !"<< endl;
+	}
+	else
+	{
+		cout << "\nPattern does not match in sentence !" << endl;
+	}
+
+}
 void kmp_functions::show_result()
 {
+	cout << "Fail function: " << endl;
 	for (int i = 0; i < fail_func_int.size(); i++)
 	{
 		cout << right << setw(2) << fail_func_int[i] << " ";
