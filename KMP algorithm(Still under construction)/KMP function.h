@@ -18,6 +18,7 @@ public:
 	string sentence, pat; //fail_func_str;
 	vector<int>fail_func_int, fail_func_int_from_minus_one;
 	void fail_function();
+	void show_result();
 };
 kmp_functions::kmp_functions()
 {
@@ -38,23 +39,14 @@ kmp_functions::kmp_functions()
 void kmp_functions::kmp_exec()
 {
 	fail_function();
-	for (int i = 0; i < fail_func_int.size(); i++)
-	{
-		cout << right << setw(2) << fail_func_int[i] << " ";
-	}
-	cout << endl;
-	for (int i = 0; i < fail_func_int_from_minus_one.size(); i++)
-	{
-		cout << right << setw(2) << fail_func_int_from_minus_one[i] << " ";
-	}
+	show_result();
 }
 void kmp_functions::fail_function()
 {
 	int i = 1, j = 0;
 	fail_func_int.resize(pat.size());
 	fail_func_int[0] = 0;
-	//cout << "i now at :"; //debugging purpose
-	for (; pat[i] != pat[j] && i < pat.size();)//dont forget the border check for i 
+	for (; pat[i] != pat[j] && i < pat.size();)//dont forget the border check for i first initilaization 
 	{
 		fail_func_int[i] = 0;
 		i++;
@@ -63,7 +55,6 @@ void kmp_functions::fail_function()
 	cout << endl;
 	while (i < pat.size())
 	{
-		//cout<<"i and j at" << i << "," << j<<" ";
 		//system("pause");
 		if (pat[j] == pat[i])
 		{
@@ -76,11 +67,8 @@ void kmp_functions::fail_function()
 		{
 			while (pat[j] != pat[i])
 			{
-
-				cout << "i and j" << i << " " << j << endl;
 				if (!j)//boundary check if j goes to the LHS most
-				{
-					
+				{				
 					j = 0;
 					i++;
 					break;
@@ -103,5 +91,17 @@ void kmp_functions::fail_function()
 	for (int k = 0; k < fail_func_int.size(); k++)
 	{
 		fail_func_int_from_minus_one.push_back(fail_func_int[k] - 1);
+	}
+}
+void kmp_functions::show_result()
+{
+	for (int i = 0; i < fail_func_int.size(); i++)
+	{
+		cout << right << setw(2) << fail_func_int[i] << " ";
+	}
+	cout << endl;
+	for (int i = 0; i < fail_func_int_from_minus_one.size(); i++)
+	{
+		cout << right << setw(2) << fail_func_int_from_minus_one[i] << " ";
 	}
 }
