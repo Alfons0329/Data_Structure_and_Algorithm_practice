@@ -1,15 +1,22 @@
 #include<stdio.h>
 #include<string.h>
-#include<stack>
 #include<iostream>
 #include<fstream>
 #include<string>
 #define MAX 1000000;
 int* fail_func_ptr;
-int result[10000], pat_size;
+int result[1000000], pat_size;
 char* pat_ptr;
-char input[10000];
+char input[1000000];
 using namespace std;
+void print_result(int ind_ma)
+{
+	cout << ind_ma +1<< endl;
+	for (int i = 0; result[i] != -1; i++)
+	{
+		cout << result[i] << " ";
+	}
+}
 int str_match()
 {
 	int sentence_size = 0, i = 0, j = 0, word_count = 1, match_independent = 0, result_count = 0;
@@ -21,7 +28,7 @@ int str_match()
 
 	while (i < sentence_size&&j < pat_size)
 	{
-		cout << "I is now" << i << endl;
+		cout << "I is now " << i <<"J is now "<<j<< endl;
 		if (input[i] == pat_ptr[j])
 		{
 			i++;
@@ -50,15 +57,18 @@ int str_match()
 		{
 			match = true;
 			j = 0;
-			if ((input[i] >= 'a') && (input[i] <= 'z'))
+			if ((input[i] >= 'a') && (input[i] <= 'z')) //back 1 space for the case like aa and find in aaa
+			{
 				i--;
+			}
+				
 		}
 		
 		if (match)
 		{
 			if (i != sentence_size && ((input[i]==' '||input[i]=='?'||input[i]==','||input[i]=='.')&&( input[i - pat_size - 1] == ' ' || input[i - pat_size - 1] == '@')))
 			{
-				cout << "Match independent " << i << endl;
+				//cout << "Match independent " << i << endl;
 				match_independent++;
 			}
 			if (i == sentence_size-1 && (input[i - pat_size - 1] == ' ' || input[i - pat_size - 1] == '@')) // tricky and special condition when it comes to final position
@@ -69,10 +79,8 @@ int str_match()
 			result[result_count] = word_count;
 			match = false;
 			result_count++;
-			cout << "Independent " << input[i - pat_size - 1] << endl;
 		}
 	}
-	cout << "\nMatch independent: " << match_independent << endl;
 	return match_independent;
 }
 
@@ -116,12 +124,7 @@ void fail_func()
 					i++;
 					break;
 				}
-				if (j == 1)
-				{
-					j--;
-					j = fail_func_ptr[j];
-				}
-				else if (j > 1)
+				else if (j >= 1)
 				{
 					j--;
 					j = fail_func_ptr[j];
@@ -133,29 +136,38 @@ void fail_func()
 }
 int main()
 {
-	ifstream fptr;
-	fptr.open("test3.txt");
+	string open, out;
+	ifstream fptr; 
+	cout << "Enter file name I_O: ";
+	cin >> open >> out;
+	fptr.open(open);
+	//initilaize the array
 	memset(input, '@', sizeof(input));
 	memset(result, -1, sizeof(result));
+
 	int i = 0, independent_match;
+	//open file and get data from it
 	while (fptr.get(input[i]))
 	{
 		i++;
 	}
 	for (int i = 0; input[i] != '@'; i++)
 		cout << input[i];
-
+	//kmp execution for whole text
 	fail_func();
 	independent_match = str_match();
-	ofstream ofptr("test3out.txt");
+	print_result(independent_match);
+	//output file
+	ofstream ofptr(out);
 		ofptr << independent_match +1<< endl;
 
 	for (int i = 0; result[i] != -1; i++)
 	{
 		ofptr << result[i];
 	}
-	system("pause");
-	fptr.close();  //Dont forget to close file :3
+	//Dont forget to close file :3
+	fptr.close();  
 	ofptr.close();
+	system("pause");
 	return 0;
 }
