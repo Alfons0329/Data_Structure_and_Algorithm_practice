@@ -18,7 +18,7 @@ public:
 template <typename T>
 class bin_tree_main
 {
-friend class bin_tree_exec;
+	friend class bin_tree_exec;
 public:
 	bin_tree_main()
 	{
@@ -35,22 +35,21 @@ public:
 	void postorder_traverse(node<T>*);
 	void breath_first_search(node<T>*);
 	void depth_first_search(node<T>*);
-	void add_node_after(node<T>*,T,T);
-	void delete_node_at(node<T>*,T);
+	void delete_node_at(node<T>*, T);
 	void cleantag();
 	void delete_tree();
 
 	bool find_value(node<T>*);
 
 	node<T>* find_value_DFS_iterative();
-	node<T>* binary_search(node<T>*,T);
+	node<T>* binary_search(node<T>*, T);
 	node<T>* find_max(node<T>*);
 	node<T>* find_min(node<T>*);
 	node<T>* find_succeesor(node<T>*, T);
 	node<T>* find_predecceesor(node<T>*, T);
 private:
 	node<T>* root;
-	T search_value;
+	T search_value, add_value, add_after, del_value;
 	int nodes_cnt, leaves_cnt;
 };
 
@@ -71,7 +70,7 @@ void bin_tree_main<T>::input_data()
 template <typename T>    //Top-down from root node construction and Time complexity is
 void bin_tree_main<T>::create_tree(T in) //Not bin_tree_main:: since it is a template class
 {
-	node<T>* newnode = new node<T>;
+	node<T>* newnode = new node < T > ;
 	newnode->data = in;
 	newnode->left_ch = NULL;
 	newnode->right_ch = NULL;
@@ -82,12 +81,12 @@ void bin_tree_main<T>::create_tree(T in) //Not bin_tree_main:: since it is a tem
 	}
 	else
 	{
-		
+
 		node<T>* current = root; //current is used for traverse
-		node<T>* prev=NULL; //save prev data before current reach NULL for insertion   current reach NULL and prev before 1 level of current
-		
+		node<T>* prev = NULL; //save prev data before current reach NULL for insertion   current reach NULL and prev before 1 level of current
+
 		//start the top-down from root to build the binary tree ,and traverse to the node before newnode to implement insertion
-		while (current!=NULL)
+		while (current != NULL)
 		{
 			//cout << "Build node " << newnode->data << "After " << current->data << endl;
 			prev = current;
@@ -117,7 +116,7 @@ void bin_tree_main<T>::preorder_traverse(node<T>* current)
 {
 	if (current == NULL)
 	{
-		return;
+		return ;
 	}
 	cout << current->data << " ";
 	preorder_traverse(current->left_ch);
@@ -128,7 +127,7 @@ void bin_tree_main<T>::inorder_traverse(node<T>* current)
 {
 	if (current == NULL)
 	{
-		return;
+		return ;
 	}
 	inorder_traverse(current->left_ch);
 	cout << current->data << " ";
@@ -139,7 +138,7 @@ void bin_tree_main<T>::postorder_traverse(node<T>* current)
 {
 	if (current == NULL)
 	{
-		return;
+		return ;
 	}
 	postorder_traverse(current->left_ch);
 	postorder_traverse(current->right_ch);
@@ -173,13 +172,13 @@ bool bin_tree_main<T>::find_value(node<T>* current) //by DFS recursive
 		{
 			if (search_value < current->data)
 			{
-				 find_value(current->left_ch);
+				find_value(current->left_ch);
 			}
 			else
 			{
-				 find_value(current->right_ch);
+				find_value(current->right_ch);
 			}
-			
+
 		}
 	}
 	else
@@ -225,10 +224,10 @@ node<T>* bin_tree_main<T>::find_value_DFS_iterative()
 	{
 		return NULL;
 	}
-	
+
 }
 template <typename T>
-node<T>* bin_tree_main<T>::binary_search(node<T>* current ,T value)
+node<T>* bin_tree_main<T>::binary_search(node<T>* current, T value)
 {
 	while (current != NULL)
 	{
@@ -251,9 +250,10 @@ node<T>* bin_tree_main<T>::binary_search(node<T>* current ,T value)
 template <typename T>
 node<T>* bin_tree_main<T>::find_min(node<T>* current)
 {
-	if (current== NULL)
+	node<T>* temp_root = current;
+	if (current == NULL)
 	{
-		cout << "Max value in BST: NULL" << endl;
+		cout << "Min value in BST: NULL" << endl;
 		return NULL;
 	}
 	else
@@ -262,13 +262,14 @@ node<T>* bin_tree_main<T>::find_min(node<T>* current)
 		{
 			current = current->left_ch;
 		}
-		cout << "Max value in BST: " << current->data;
+		cout << "Min value in root "<<temp_root->data <<" BST is " << current->data<<endl;
 		return current;
 	}
 }
 template <typename T>
 node<T>* bin_tree_main<T>::find_max(node<T>* current)
 {
+	node<T>* temp_root = current;
 	if (current == NULL)
 	{
 		cout << "Max value in BST: NULL" << endl;
@@ -279,22 +280,22 @@ node<T>* bin_tree_main<T>::find_max(node<T>* current)
 		while (current->right_ch != NULL) //head to the leftmost node, which is the smallest
 		{
 			current = current->right_ch;
-		}
-		cout << "Max value in BST: " << current->right_ch;
+		} 
+		cout << "Max value in root " << temp_root->data << " BST is " << current->data<<endl;
 		return current;
 	}
 }
-template <typename T>
-void bin_tree_main<T>::add_node_after(node<T>* current,T after,T adddata)
+/*template <typename T>
+void bin_tree_main<T>::add_node_after(node<T>* current, T after, T addvalue)
 {
-	node <T>* newnode = new node<T>*;
-	newnode->data = adddata;
-	newnode->left_ch=NULL:
+	node <T>* newnode = new node < T > ;
+	newnode->data = addvalue;
+	newnode->left_ch = NULL;
 	newnode->right_ch = NULL;
 	node <T>* before_add;
-	if (after==root->data)
+	if (after == root->data)
 	{
-		if (adddata < root->data)
+		if (addvalue < root->data)
 		{
 			root->left_ch = newnode;
 			newnode->left_ch = root->left_ch->left_ch;
@@ -315,8 +316,8 @@ void bin_tree_main<T>::add_node_after(node<T>* current,T after,T adddata)
 	}
 	else
 	{
-		before_add = binary_search(root);
-		if (adddata < before_add->data)
+		before_add = binary_search(root, addvalue);
+		if (addvalue < before_add->data)
 		{
 			before_add->left_ch = newnode;
 			newnode->left_ch = before_add->left_ch->left_ch;
@@ -335,57 +336,120 @@ void bin_tree_main<T>::add_node_after(node<T>* current,T after,T adddata)
 			newnode->right_ch->parent = newnode;
 		}
 	}
-}
+}*/
 template <typename T>  //3cases 0chils 1 child and hardest 2 choldren!!!
 void bin_tree_main<T>::delete_node_at(node<T>* current, T value) //value of node to be deleted
 {
-	node<T>* to_be_deleted;
+	node<T>* before_delete = NULL; 
+	node<T>* deltmp = NULL;
+	node<T>* to_be_deleted = NULL;
 	if (current == NULL)
 	{
 		cout << "Root is NULL! Nothing to be deleted !" << endl;
 		return;
 	}
-	to_be_deleted = binary_search(value);
+	before_delete = binary_search(root, value)->parent; //should search the node before deleted or will cause dangling pointer
+	to_be_deleted = binary_search(root, value);
+
 	//case 1:  leaf
 	if (to_be_deleted->left_ch == NULL&&to_be_deleted->right_ch == NULL)
 	{
-		if (value < to_be_deleted->parent->data)
+		if (to_be_deleted == root)
 		{
-			to_be_deleted->parent->left_ch=NULL:
-			delete to_be_deleted;
+			root = NULL;
+		}
+		else if (before_delete->left_ch == to_be_deleted)
+		{		
+			deltmp = before_delete->left_ch;
+			before_delete->left_ch = NULL;
+			delete deltmp ;
+
+		}
+		else if (before_delete->right_ch == to_be_deleted)
+		{		
+			deltmp = before_delete->right_ch;
+			before_delete->right_ch = NULL;
+			delete deltmp;
+		}
+		 //dont forget this, or pointer will crash while traversaling
+	}
+	//case 2: 1 child node
+	else if ((to_be_deleted->left_ch&&to_be_deleted->right_ch == NULL) || (to_be_deleted->left_ch == NULL&&to_be_deleted->right_ch))
+	{
+		
+		cout << "Delete a 1 child node " << to_be_deleted->data << endl;
+		if (to_be_deleted == root)
+		{
+			if (to_be_deleted->right_ch == NULL)
+			{
+				deltmp = root;
+				root = root->left_ch;
+				delete deltmp;
+			}
+			else if (before_delete->left_ch == NULL)
+			{
+				deltmp = root;
+				root = root->right_ch;
+				delete deltmp;
+			}
+		}
+
+		else if (to_be_deleted->right_ch == NULL)
+		{
+			if (before_delete->left_ch == to_be_deleted)
+			{
+				deltmp = before_delete->left_ch;
+				before_delete->left_ch = to_be_deleted->left_ch;
+				delete deltmp;
+			}
+			else if (before_delete->right_ch == to_be_deleted)
+			{
+				deltmp = before_delete->right_ch;
+				before_delete->right_ch = to_be_deleted->left_ch;
+				delete deltmp;
+			}
+		}
+
+		else if (to_be_deleted->left_ch == NULL)			
+		{
+			if (before_delete->left_ch == to_be_deleted)
+			{
+				deltmp = before_delete->left_ch;
+				before_delete->left_ch = to_be_deleted->right_ch;
+				delete deltmp;
+			}
+			else if (before_delete->right_ch == to_be_deleted)
+			{
+				deltmp = before_delete->right_ch;
+				before_delete->right_ch = to_be_deleted->right_ch;
+				delete deltmp;
+			}
+		}
+		
+	}
+	//case 3: 2 child node (full node)
+	else if (to_be_deleted->left_ch&&to_be_deleted->right_ch) //replace the deleted node with the largest in left subtree or the smallest in right subtree , still obey BST
+	{
+		node<T>* left_subtree_max=NULL;
+		node<T>* before_lsub_max=NULL;
+		left_subtree_max = find_max(to_be_deleted->left_ch);
+		before_lsub_max = binary_search(root,left_subtree_max->data)->parent;
+		cout << "Delete 2 children node :" << to_be_deleted->data << " Replace with lsubtree max node: " << left_subtree_max->data << endl;
+		if (to_be_deleted == root)
+		{
+			root->data = left_subtree_max->data;
+			deltmp = before_lsub_max->right_ch;
+			before_lsub_max->right_ch = NULL;
+			delete deltmp;
 		}
 		else
 		{
-			to_be_deleted->parent->right_ch = NULL:
-			delete to_be_deleted;
+			to_be_deleted->data = left_subtree_max->data;
+			deltmp=before_lsub_max->right_ch;
+			before_lsub_max->right_ch = NULL;
+			delete deltmp;
 		}
-	}
-	//case 2: 1 child node
-	else if ((to_be_deleted->left_ch&&to_be_deleted->right_ch == NULL) || (to_be_deleted->left_ch==NULL&&to_be_deleted->right_ch))
-	{
-		if (to_be_deleted->right_ch == NULL)
-		//dont need to decide which side of parents should ramain the child since the logic in BST is still right
-		//just take the max in left subtree and will be good for BST logic , such node is directly the first left since it's the biggest
-		{
-			to_be_deleted->parent->left_ch = to_be_deleted->left_ch;
-			delete to_be_deleted;
-		}
-		else if (to_be_deleted->left_ch == NULL)
-		//dont need to decide which side of parents should ramain the child since the logic in BST is still right
-		//just take the min in right subtree and will be good for BST logic , such node is directly the first left since it's the smallest
-		{
-			to_be_deleted->parent->right_ch = to_be_deleted->right_ch;
-			delete to_be_deleted;
-		}
-	}
-	//case 3: 2 child node (full node)
-	else if (to_be_deleted->left_ch&&to_be_deleted->right_ch) //replace the deleted node with the largest in left subtree or the smallest in right subtree
-	{
-		node<T>* left_subtree_node;
-		left_subtree_node = find_min(to_be_deleted);
-		to_be_deleted = left_subtree_node;
-		left_subtree_node->parent->left_ch = left_subtree_node->right_ch;
-		delete left_subtree_node;
+		
 	}
 }
 class bin_tree_exec
@@ -407,8 +471,8 @@ void bin_tree_exec::command_control(bin_tree_main<T> bin_tree)
 	do
 	{
 		cout << "\nCommand: 1 build tree ,2 preorder traverse ,3 inorder traverse ,4 postorder traverse\n" <<
-			"5 BFS ,6 DFS ,7 find value ,8 find value iterative ,9 binary search ,10 find max ,11 find min\n"<< 
-			"12 insert node after ,13 delete node ,14 find predecessor ,15 find succeesor,0  end" << endl;
+			"5 BFS ,6 DFS ,7 find value ,8 find value iterative ,9 binary search ,10 find max ,11 find min\n" <<
+			",13 delete node ,14 find predecessor ,15 find succeesor,0  end" << endl;
 		cin >> command;
 		switch (command)
 		{
@@ -430,7 +494,7 @@ void bin_tree_exec::command_control(bin_tree_main<T> bin_tree)
 		case 6:
 			bin_tree.inorder_traverse(bin_tree.root);
 			break;
-		case 7: 
+		case 7:
 			cout << "Search value: ";
 			cin >> bin_tree.search_value;
 			if (!bin_tree.find_value(bin_tree.root))
@@ -461,7 +525,7 @@ void bin_tree_exec::command_control(bin_tree_main<T> bin_tree)
 		case 9:
 			cout << "Search value: ";
 			cin >> bin_tree.search_value;
-			if (bin_tree.binary_search(bin_tree.root, bin_tree.search_value)==NULL)
+			if (bin_tree.binary_search(bin_tree.root, bin_tree.search_value) == NULL)
 			{
 				cout << "Vaule doesn't exist in BST! " << endl;
 			}
@@ -475,13 +539,23 @@ void bin_tree_exec::command_control(bin_tree_main<T> bin_tree)
 			}
 			break;
 		case 10:
-			cout << "Max value in BST " << bin_tree.find_max(bin_tree.root)<<endl;
+			cout << "Max value in BST " << bin_tree.find_max(bin_tree.root) << endl;
 			break;
 		case 11:
-			cout << "Min value in BST " << bin_tree.find_min(bin_tree.root)<<endl;
+			cout << "Min value in BST " << bin_tree.find_min(bin_tree.root) << endl;
+			break;
+		/*case 12:
+				cout << "Add value1 after value2 (v1,v2)(obey BST's rule): ";
+				cin >> bin_tree.add_value >> bin_tree.add_after;
+				bin_tree.add_node_after(bin_tree.root, bin_tree.add_after, bin_tree.add_value);
+				break;*/
+		case 13:
+			cout << "Delete ";
+			cin >> bin_tree.del_value;
+			bin_tree.delete_node_at(bin_tree.root, bin_tree.del_value);
 			break;
 		default:
-				cout << "Wrong input , try again: " << endl;
+			cout << "Wrong input , try again: " << endl;
 		}
 	} while (command);
 }
@@ -494,26 +568,26 @@ void bin_tree_exec::main_exec()
 	{
 	case 0:
 	{
-			  bin_tree_main<int> bin_tree_int;
-			  command_control(bin_tree_int);
-			  break;
+		bin_tree_main<int> bin_tree_int;
+		command_control(bin_tree_int);
+		break;
 	}
 	case 1:
 	{
-			  bin_tree_main<double> bin_tree_dou;
-			  command_control(bin_tree_dou);
-			  break;
+		bin_tree_main<double> bin_tree_dou;
+		command_control(bin_tree_dou);
+		break;
 	}
 	case 2:
 	{
-			  bin_tree_main<string> bin_tree_str;
-			  command_control(bin_tree_str);
-			  break;
+		bin_tree_main<string> bin_tree_str;
+		command_control(bin_tree_str);
+		break;
 	}
 	default:
 	{
-			   cout << "Wrong input, please try again.";
-			   break;
+		cout << "Wrong input, please try again.";
+		break;
 	}
 	}
 
