@@ -30,6 +30,7 @@ public:
 	}
 	void input_data();
 	void create_tree(T);
+	void create_2nd_tree(T);
 	void preorder_traverse(node<T>*);
 	void inorder_traverse(node<T>*);
 	void postorder_traverse(node<T>*);
@@ -38,6 +39,7 @@ public:
 	void delete_node_at(node<T>*, T);
 	void cleantag();
 	void delete_tree();
+	void merge_2trees(node<T>*, node<T>*);
 
 	bool find_value(node<T>*);
 
@@ -48,7 +50,7 @@ public:
 	node<T>* find_succeesor(node<T>*, T);
 	node<T>* find_predecceesor(node<T>*, T);
 private:
-	node<T>* root;
+	node<T>* root,root2_splitted,root2_new;
 	T search_value, add_value, add_after, del_value;
 	int nodes_cnt, leaves_cnt;
 };
@@ -88,7 +90,6 @@ void bin_tree_main<T>::create_tree(T in) //Not bin_tree_main:: since it is a tem
 		//start the top-down from root to build the binary tree ,and traverse to the node before newnode to implement insertion
 		while (current != NULL)
 		{
-			//cout << "Build node " << newnode->data << "After " << current->data << endl;
 			prev = current;
 			if (in < current->data)
 			{
@@ -99,7 +100,7 @@ void bin_tree_main<T>::create_tree(T in) //Not bin_tree_main:: since it is a tem
 				current = current->right_ch;
 			}
 		}
-		//now at the right node's place before the newnode's insertion
+		//now at the right node's place before the newnode's insertion to ensure the connection
 		if (in < prev->data)
 		{
 			prev->left_ch = newnode;
@@ -349,8 +350,8 @@ void bin_tree_main<T>::delete_node_at(node<T>* current, T value) //value of node
 		return;
 	}
 	before_delete = binary_search(root, value)->parent; //should search the node before deleted or will cause dangling pointer
+	//dont forget this, or pointer will crash while traversaling since the node is not connected well
 	to_be_deleted = binary_search(root, value);
-
 	//case 1:  leaf
 	if (to_be_deleted->left_ch == NULL&&to_be_deleted->right_ch == NULL)
 	{
@@ -371,7 +372,7 @@ void bin_tree_main<T>::delete_node_at(node<T>* current, T value) //value of node
 			before_delete->right_ch = NULL;
 			delete deltmp;
 		}
-		 //dont forget this, or pointer will crash while traversaling
+		 
 	}
 	//case 2: 1 child node
 	else if ((to_be_deleted->left_ch&&to_be_deleted->right_ch == NULL) || (to_be_deleted->left_ch == NULL&&to_be_deleted->right_ch))
@@ -432,24 +433,22 @@ void bin_tree_main<T>::delete_node_at(node<T>* current, T value) //value of node
 	{
 		node<T>* left_subtree_max=NULL;
 		node<T>* before_lsub_max=NULL;
+		T keep_data;
 		left_subtree_max = find_max(to_be_deleted->left_ch);
 		before_lsub_max = binary_search(root,left_subtree_max->data)->parent;
 		cout << "Delete 2 children node :" << to_be_deleted->data << " Replace with lsubtree max node: " << left_subtree_max->data << endl;
 		if (to_be_deleted == root)
 		{
-			root->data = left_subtree_max->data;
-			deltmp = before_lsub_max->right_ch;
-			before_lsub_max->right_ch = NULL;
-			delete deltmp;
+			keep_data = left_subtree_max->data;
+			delete_node_at(root, left_subtree_max->data);
+			root->data = keep_data;
 		}
 		else
 		{
-			to_be_deleted->data = left_subtree_max->data;
-			deltmp=before_lsub_max->right_ch;
-			before_lsub_max->right_ch = NULL;
-			delete deltmp;
+			keep_data = left_subtree_max->data;
+			delete_node_at(root, left_subtree_max->data);
+			root->data = keep_data;
 		}
-		
 	}
 }
 class bin_tree_exec
