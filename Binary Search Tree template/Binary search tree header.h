@@ -23,6 +23,11 @@ public:
 	bin_tree_main()
 	{
 		root = NULL;
+		root2_new = NULL;
+		root2_splitted = NULL;
+		root->parent = NULL;
+		root2_new->parent = NULL;
+		root2_splitted->parent = NULL;
 	}
 	~bin_tree_main()
 	{
@@ -31,15 +36,18 @@ public:
 	void input_data();
 	void create_tree(T);
 	void create_2nd_tree(T);
+	void preorder_collect_node(node<T>*);
 	void preorder_traverse(node<T>*);
 	void inorder_traverse(node<T>*);
 	void postorder_traverse(node<T>*);
 	void breath_first_search(node<T>*);
 	void depth_first_search(node<T>*);
 	void delete_node_at(node<T>*, T);
-	void cleantag();
-	void delete_tree();
-	void merge_2trees(node<T>*, node<T>*);
+	void cleantag(node<T>*);
+	//void delete_tree(node<T>*);
+	void merge_2trees(node<T>*,node<T>*);
+	void three_wayjoin(node<T>*, node<T>*);
+	void split_between(T,T);
 
 	bool find_value(node<T>*);
 
@@ -49,10 +57,14 @@ public:
 	node<T>* find_min(node<T>*);
 	node<T>* find_succeesor(node<T>*, T);
 	node<T>* find_predecceesor(node<T>*, T);
+	node<T>* least_common_ancestor(T,T);
 private:
-	node<T>* root,root2_splitted,root2_new;
+	node<T>* root;
+	node<T>* root2_splitted;
+	node<T>* root2_new;
 	T search_value, add_value, add_after, del_value;
 	int nodes_cnt, leaves_cnt;
+	vector<T> node_collector;
 };
 
 template <typename T>
@@ -72,7 +84,7 @@ void bin_tree_main<T>::input_data()
 template <typename T>    //Top-down from root node construction and Time complexity is
 void bin_tree_main<T>::create_tree(T in) //Not bin_tree_main:: since it is a template class
 {
-	node<T>* newnode = new node < T > ;
+	node<T>* newnode = new node < T >;
 	newnode->data = in;
 	newnode->left_ch = NULL;
 	newnode->right_ch = NULL;
@@ -112,13 +124,68 @@ void bin_tree_main<T>::create_tree(T in) //Not bin_tree_main:: since it is a tem
 		newnode->parent = prev;
 	}
 }
+template <typename T>    //Top-down from root node construction and Time complexity is
+void bin_tree_main<T>::create_2nd_tree(T in) //Not bin_tree_main:: since it is a template class
+{
+	node<T>* newnode = new node < T >;
+	newnode->data = in;
+	newnode->left_ch = NULL;
+	newnode->right_ch = NULL;
+	newnode->visit = false;
+	if (root2_new == NULL)
+	{
+		root2_new = newnode;
+	}
+	else
+	{
+
+		node<T>* current = root2_new; //current is used for traverse
+		node<T>* prev = NULL; //save prev data before current reach NULL for insertion   current reach NULL and prev before 1 level of current
+
+		//start the top-down from root to build the binary tree ,and traverse to the node before newnode to implement insertion
+		while (current != NULL)
+		{
+			prev = current;
+			if (in < current->data)
+			{
+				current = current->left_ch;
+			}
+			else
+			{
+				current = current->right_ch;
+			}
+		}
+		//now at the right node's place before the newnode's insertion to ensure the connection
+		if (in < prev->data)
+		{
+			prev->left_ch = newnode;
+		}
+		else
+		{
+			prev->right_ch = newnode;
+		}
+		newnode->parent = prev;
+	}
+}
+template <typename T>
+void bin_tree_main<T>::preorder_collect_node(node<T>* current)
+{
+	if (current == NULL)
+	{
+		return;
+	}
+	node_collector.push_back(current->data);
+	preorder_traverse(current->left_ch);
+	preorder_traverse(current->right_ch);
+}
 template <typename T>
 void bin_tree_main<T>::preorder_traverse(node<T>* current)
 {
 	if (current == NULL)
 	{
-		return ;
+		return;
 	}
+	current->visit = false;
 	cout << current->data << " ";
 	preorder_traverse(current->left_ch);
 	preorder_traverse(current->right_ch);
@@ -128,7 +195,7 @@ void bin_tree_main<T>::inorder_traverse(node<T>* current)
 {
 	if (current == NULL)
 	{
-		return ;
+		return;
 	}
 	inorder_traverse(current->left_ch);
 	cout << current->data << " ";
@@ -139,7 +206,7 @@ void bin_tree_main<T>::postorder_traverse(node<T>* current)
 {
 	if (current == NULL)
 	{
-		return ;
+		return;
 	}
 	postorder_traverse(current->left_ch);
 	postorder_traverse(current->right_ch);
@@ -263,9 +330,43 @@ node<T>* bin_tree_main<T>::find_min(node<T>* current)
 		{
 			current = current->left_ch;
 		}
-		cout << "Min value in root "<<temp_root->data <<" BST is " << current->data<<endl;
+		cout << "Min value in root " << temp_root->data << " BST is " << current->data << endl;
 		return current;
 	}
+}
+template <typename T>
+node<T>* bin_tree_main<T>::find_succeesor(node<T>* current, T value)
+{
+	node<T>*succeessor = NULL;
+	node<T>* value_node;
+	value_node = binary_search(value);
+	//case 1: no r_subtree , binary search the closest ancestor to make searched node on l_subtree
+	if (value_node->right_ch == NULL)
+	{
+		while (current->parent->left_ch!=current)
+		{
+			current = current->parent;
+		}
+		succeessor = current->parent;
+	}
+	//case 2: has r_subtree
+	else
+	{
+		succeessor = find_min(current->right_ch);
+	}
+	return succeessor;
+}
+template <typename T>
+node<T>* bin_tree_main<T>::least_common_ancestor(T value1,T value2)
+{
+	node<T>* current1=binary_search(value1);
+	node<T>* current2=binary_search(value2);
+	while (current1->data != current2->data)
+	{
+		current1 = current1->parent;
+		current2 = current2->parent;
+	}
+	return current1;
 }
 template <typename T>
 node<T>* bin_tree_main<T>::find_max(node<T>* current)
@@ -281,67 +382,67 @@ node<T>* bin_tree_main<T>::find_max(node<T>* current)
 		while (current->right_ch != NULL) //head to the leftmost node, which is the smallest
 		{
 			current = current->right_ch;
-		} 
-		cout << "Max value in root " << temp_root->data << " BST is " << current->data<<endl;
+		}
+		cout << "Max value in root " << temp_root->data << " BST is " << current->data << endl;
 		return current;
 	}
 }
 /*template <typename T>
 void bin_tree_main<T>::add_node_after(node<T>* current, T after, T addvalue)
 {
-	node <T>* newnode = new node < T > ;
-	newnode->data = addvalue;
-	newnode->left_ch = NULL;
-	newnode->right_ch = NULL;
-	node <T>* before_add;
-	if (after == root->data)
-	{
-		if (addvalue < root->data)
-		{
-			root->left_ch = newnode;
-			newnode->left_ch = root->left_ch->left_ch;
-			newnode->right_ch = root->left_ch->right_ch;
-			newnode->parent = root;
-			newnode->left_ch->parent = newnode;
-			newnode->right_ch->parent = newnode;
-		}
-		else
-		{
-			root->right_ch = newnode;
-			newnode->left_ch = root->right_ch->left_ch;
-			newnode->right_ch = root->right_ch->right_ch;
-			newnode->parent = root;
-			newnode->left_ch->parent = newnode;
-			newnode->right_ch->parent = newnode;
-		}
-	}
-	else
-	{
-		before_add = binary_search(root, addvalue);
-		if (addvalue < before_add->data)
-		{
-			before_add->left_ch = newnode;
-			newnode->left_ch = before_add->left_ch->left_ch;
-			newnode->right_ch = before_add->left_ch->right_ch;
-			newnode->parent = before_add;
-			newnode->left_ch->parent = newnode;
-			newnode->right_ch->parent = newnode;
-		}
-		else
-		{
-			before_add->right_ch = newnode;
-			newnode->left_ch = before_add->right_ch->left_ch;
-			newnode->right_ch = before_add->right_ch->right_ch;
-			newnode->parent = before_add;
-			newnode->left_ch->parent = newnode;
-			newnode->right_ch->parent = newnode;
-		}
-	}
+node <T>* newnode = new node < T > ;
+newnode->data = addvalue;
+newnode->left_ch = NULL;
+newnode->right_ch = NULL;
+node <T>* before_add;
+if (after == root->data)
+{
+if (addvalue < root->data)
+{
+root->left_ch = newnode;
+newnode->left_ch = root->left_ch->left_ch;
+newnode->right_ch = root->left_ch->right_ch;
+newnode->parent = root;
+newnode->left_ch->parent = newnode;
+newnode->right_ch->parent = newnode;
+}
+else
+{
+root->right_ch = newnode;
+newnode->left_ch = root->right_ch->left_ch;
+newnode->right_ch = root->right_ch->right_ch;
+newnode->parent = root;
+newnode->left_ch->parent = newnode;
+newnode->right_ch->parent = newnode;
+}
+}
+else
+{
+before_add = binary_search(root, addvalue);
+if (addvalue < before_add->data)
+{
+before_add->left_ch = newnode;
+newnode->left_ch = before_add->left_ch->left_ch;
+newnode->right_ch = before_add->left_ch->right_ch;
+newnode->parent = before_add;
+newnode->left_ch->parent = newnode;
+newnode->right_ch->parent = newnode;
+}
+else
+{
+before_add->right_ch = newnode;
+newnode->left_ch = before_add->right_ch->left_ch;
+newnode->right_ch = before_add->right_ch->right_ch;
+newnode->parent = before_add;
+newnode->left_ch->parent = newnode;
+newnode->right_ch->parent = newnode;
+}
+}
 }*/
 template <typename T>  //3cases 0chils 1 child and hardest 2 choldren!!!
 void bin_tree_main<T>::delete_node_at(node<T>* current, T value) //value of node to be deleted
 {
-	node<T>* before_delete = NULL; 
+	node<T>* before_delete = NULL;
 	node<T>* deltmp = NULL;
 	node<T>* to_be_deleted = NULL;
 	if (current == NULL)
@@ -360,24 +461,24 @@ void bin_tree_main<T>::delete_node_at(node<T>* current, T value) //value of node
 			root = NULL;
 		}
 		else if (before_delete->left_ch == to_be_deleted)
-		{		
+		{
 			deltmp = before_delete->left_ch;
 			before_delete->left_ch = NULL;
-			delete deltmp ;
+			delete deltmp;
 
 		}
 		else if (before_delete->right_ch == to_be_deleted)
-		{		
+		{
 			deltmp = before_delete->right_ch;
 			before_delete->right_ch = NULL;
 			delete deltmp;
 		}
-		 
+
 	}
 	//case 2: 1 child node
 	else if ((to_be_deleted->left_ch&&to_be_deleted->right_ch == NULL) || (to_be_deleted->left_ch == NULL&&to_be_deleted->right_ch))
 	{
-		
+
 		cout << "Delete a 1 child node " << to_be_deleted->data << endl;
 		if (to_be_deleted == root)
 		{
@@ -411,7 +512,7 @@ void bin_tree_main<T>::delete_node_at(node<T>* current, T value) //value of node
 			}
 		}
 
-		else if (to_be_deleted->left_ch == NULL)			
+		else if (to_be_deleted->left_ch == NULL)
 		{
 			if (before_delete->left_ch == to_be_deleted)
 			{
@@ -426,16 +527,16 @@ void bin_tree_main<T>::delete_node_at(node<T>* current, T value) //value of node
 				delete deltmp;
 			}
 		}
-		
+
 	}
 	//case 3: 2 child node (full node)
 	else if (to_be_deleted->left_ch&&to_be_deleted->right_ch) //replace the deleted node with the largest in left subtree or the smallest in right subtree , still obey BST
 	{
-		node<T>* left_subtree_max=NULL;
-		node<T>* before_lsub_max=NULL;
+		node<T>* left_subtree_max = NULL;
+		node<T>* before_lsub_max = NULL;
 		T keep_data;
 		left_subtree_max = find_max(to_be_deleted->left_ch);
-		before_lsub_max = binary_search(root,left_subtree_max->data)->parent;
+		before_lsub_max = binary_search(root, left_subtree_max->data)->parent;
 		cout << "Delete 2 children node :" << to_be_deleted->data << " Replace with lsubtree max node: " << left_subtree_max->data << endl;
 		if (to_be_deleted == root)
 		{
@@ -451,6 +552,54 @@ void bin_tree_main<T>::delete_node_at(node<T>* current, T value) //value of node
 		}
 	}
 }
+template<typename T>
+void bin_tree_main<T>::cleantag(node <T>* current)
+{
+	preorder_traverse(current);
+}
+template <typename T>
+void bin_tree_main<T>::merge_2trees(node<T>*r1,node<T>*r2)
+{
+	preorder_collect_node(r1);
+	preorder_collect_node(r2);
+	for (int i = 0; i < node_collector.size(); i++)
+	{
+		create_tree(node_collector[i]);
+	}
+}
+template <typename T>
+void bin_tree_main<T>::split_between(T value1,T value2)
+{
+	root2_new = binary_search(value2);
+	node<T>* splittedd=NULL;
+	splittedd = binary_search(value1);
+	if (splittedd->left_ch == root2_new)
+	{
+		splittedd->left_ch = NULL; 
+	}
+	else if (splittedd->right_ch == root2_new)
+	{
+		splittedd->right_ch = NULL;
+	}
+}
+template <typename T>
+void bin_tree_main<T>::three_wayjoin(node<T>* current1, node<T>* current2)
+{
+	T mid = (current1->data + current2->data) / 2;
+	node<T>* newroot=NULL;
+	newroot->parent = NULL;
+	newroot->data = mid;
+	if (current1->data < current2->data)
+	{
+		newroot->left_ch = current1;
+		newroot->right_ch = current2;
+	}
+	else
+	{
+		newroot->left_ch = current2;
+		newroot->right_ch = current1;
+	}
+}
 class bin_tree_exec
 {
 public:
@@ -459,6 +608,7 @@ public:
 		main_exec();
 	}
 	void main_exec();
+	void forest();
 	template <typename T>
 	void command_control(bin_tree_main<T>);
 private:
@@ -471,7 +621,7 @@ void bin_tree_exec::command_control(bin_tree_main<T> bin_tree)
 	{
 		cout << "\nCommand: 1 build tree ,2 preorder traverse ,3 inorder traverse ,4 postorder traverse\n" <<
 			"5 BFS ,6 DFS ,7 find value ,8 find value iterative ,9 binary search ,10 find max ,11 find min\n" <<
-			",13 delete node ,14 find predecessor ,15 find succeesor,0  end" << endl;
+			",13 delete node ,14 find predecessor ,15 find succeesor,16 forest execution 0  end" << endl;
 		cin >> command;
 		switch (command)
 		{
@@ -543,11 +693,11 @@ void bin_tree_exec::command_control(bin_tree_main<T> bin_tree)
 		case 11:
 			cout << "Min value in BST " << bin_tree.find_min(bin_tree.root) << endl;
 			break;
-		/*case 12:
-				cout << "Add value1 after value2 (v1,v2)(obey BST's rule): ";
-				cin >> bin_tree.add_value >> bin_tree.add_after;
-				bin_tree.add_node_after(bin_tree.root, bin_tree.add_after, bin_tree.add_value);
-				break;*/
+			/*case 12:
+			cout << "Add value1 after value2 (v1,v2)(obey BST's rule): ";
+			cin >> bin_tree.add_value >> bin_tree.add_after;
+			bin_tree.add_node_after(bin_tree.root, bin_tree.add_after, bin_tree.add_value);
+			break;*/
 		case 13:
 			cout << "Delete ";
 			cin >> bin_tree.del_value;
@@ -567,27 +717,31 @@ void bin_tree_exec::main_exec()
 	{
 	case 0:
 	{
-		bin_tree_main<int> bin_tree_int;
-		command_control(bin_tree_int);
-		break;
+			  bin_tree_main<int> bin_tree_int;
+			  command_control(bin_tree_int);
+			  break;
 	}
 	case 1:
 	{
-		bin_tree_main<double> bin_tree_dou;
-		command_control(bin_tree_dou);
-		break;
+			  bin_tree_main<double> bin_tree_dou;
+			  command_control(bin_tree_dou);
+			  break;
 	}
 	case 2:
 	{
-		bin_tree_main<string> bin_tree_str;
-		command_control(bin_tree_str);
-		break;
+			  bin_tree_main<string> bin_tree_str;
+			  command_control(bin_tree_str);
+			  break;
 	}
 	default:
 	{
-		cout << "Wrong input, please try again.";
-		break;
+			   cout << "Wrong input, please try again.";
+			   break;
 	}
 	}
+
+}
+void bin_tree_exec::forest()
+{
 
 }
