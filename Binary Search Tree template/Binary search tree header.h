@@ -24,10 +24,6 @@ public:
 	{
 		root = NULL;
 		root2_new = NULL;
-		root2_splitted = NULL;
-		root->parent = NULL;
-		root2_new->parent = NULL;
-		root2_splitted->parent = NULL;
 	}
 	~bin_tree_main()
 	{
@@ -41,13 +37,13 @@ public:
 	void inorder_traverse(node<T>*);
 	void postorder_traverse(node<T>*);
 	void breath_first_search(node<T>*);
-	void depth_first_search(node<T>*);
 	void delete_node_at(node<T>*, T);
 	void cleantag(node<T>*);
-	//void delete_tree(node<T>*);
-	void merge_2trees(node<T>*,node<T>*);
+	void delete_tree(node<T>*);
+	//below are forest
+	void merge_2trees(node<T>*, node<T>*);
 	void three_wayjoin(node<T>*, node<T>*);
-	void split_between(T,T);
+	void split_between(T, T);
 
 	bool find_value(node<T>*);
 
@@ -56,11 +52,9 @@ public:
 	node<T>* find_max(node<T>*);
 	node<T>* find_min(node<T>*);
 	node<T>* find_succeesor(node<T>*, T);
-	node<T>* find_predecceesor(node<T>*, T);
-	node<T>* least_common_ancestor(T,T);
+	node<T>* least_common_ancestor(T, T);
 private:
 	node<T>* root;
-	node<T>* root2_splitted;
 	node<T>* root2_new;
 	T search_value, add_value, add_after, del_value;
 	int nodes_cnt, leaves_cnt;
@@ -84,8 +78,9 @@ void bin_tree_main<T>::input_data()
 template <typename T>    //Top-down from root node construction and Time complexity is
 void bin_tree_main<T>::create_tree(T in) //Not bin_tree_main:: since it is a template class
 {
-	node<T>* newnode = new node < T >;
+	node<T>* newnode = new node < T > ;
 	newnode->data = in;
+	newnode->parent = NULL;
 	newnode->left_ch = NULL;
 	newnode->right_ch = NULL;
 	newnode->visit = false;
@@ -127,7 +122,7 @@ void bin_tree_main<T>::create_tree(T in) //Not bin_tree_main:: since it is a tem
 template <typename T>    //Top-down from root node construction and Time complexity is
 void bin_tree_main<T>::create_2nd_tree(T in) //Not bin_tree_main:: since it is a template class
 {
-	node<T>* newnode = new node < T >;
+	node<T>* newnode = new node < T > ;
 	newnode->data = in;
 	newnode->left_ch = NULL;
 	newnode->right_ch = NULL;
@@ -229,220 +224,9 @@ void bin_tree_main<T>::breath_first_search(node<T>* current)
 	}
 }
 template <typename T>
-bool bin_tree_main<T>::find_value(node<T>* current) //by DFS recursive
-{
-
-	if (current != NULL)
-	{
-		if (current->data == search_value)
-			return true;
-		else
-		{
-			if (search_value < current->data)
-			{
-				find_value(current->left_ch);
-			}
-			else
-			{
-				find_value(current->right_ch);
-			}
-
-		}
-	}
-	else
-		return false;
-}
-template <typename T>
-node<T>* bin_tree_main<T>::find_value_DFS_iterative()
-{
-	node<T>* current = root;
-	vector<node<T>*> dfs_itr;
-	dfs_itr.push_back(root);
-	bool find = false;
-	while (dfs_itr.size() > 0)
-	{
-		cout << current->data << " ";
-		if (current->data == search_value)
-		{
-			find = true;
-			break;
-		}
-		if (current->left_ch&&!current->left_ch->visit)
-		{
-			current = current->left_ch;
-			dfs_itr.push_back(current);
-		}
-		else if (current->right_ch&&!current->right_ch->visit)
-		{
-			current = current->right_ch;
-			dfs_itr.push_back(current);
-		}
-		else
-		{
-			current->visit = true;
-			current = current->parent;
-			dfs_itr.pop_back();
-		}
-	}
-	if (find)
-	{
-		return current;
-	}
-	else
-	{
-		return NULL;
-	}
-
-}
-template <typename T>
-node<T>* bin_tree_main<T>::binary_search(node<T>* current, T value)
-{
-	while (current != NULL)
-	{
-		if (value < current->data)
-		{
-			current = current->left_ch;
-		}
-		else if (value > current->data)
-		{
-			current = current->right_ch;
-		}
-		else
-		{
-			return current;
-		}
-	}
-	return NULL;
-
-}
-template <typename T>
-node<T>* bin_tree_main<T>::find_min(node<T>* current)
-{
-	node<T>* temp_root = current;
-	if (current == NULL)
-	{
-		cout << "Min value in BST: NULL" << endl;
-		return NULL;
-	}
-	else
-	{
-		while (current->left_ch != NULL) //head to the leftmost node, which is the smallest
-		{
-			current = current->left_ch;
-		}
-		cout << "Min value in root " << temp_root->data << " BST is " << current->data << endl;
-		return current;
-	}
-}
-template <typename T>
-node<T>* bin_tree_main<T>::find_succeesor(node<T>* current, T value)
-{
-	node<T>*succeessor = NULL;
-	node<T>* value_node;
-	value_node = binary_search(value);
-	//case 1: no r_subtree , binary search the closest ancestor to make searched node on l_subtree
-	if (value_node->right_ch == NULL)
-	{
-		while (current->parent->left_ch!=current)
-		{
-			current = current->parent;
-		}
-		succeessor = current->parent;
-	}
-	//case 2: has r_subtree
-	else
-	{
-		succeessor = find_min(current->right_ch);
-	}
-	return succeessor;
-}
-template <typename T>
-node<T>* bin_tree_main<T>::least_common_ancestor(T value1,T value2)
-{
-	node<T>* current1=binary_search(value1);
-	node<T>* current2=binary_search(value2);
-	while (current1->data != current2->data)
-	{
-		current1 = current1->parent;
-		current2 = current2->parent;
-	}
-	return current1;
-}
-template <typename T>
-node<T>* bin_tree_main<T>::find_max(node<T>* current)
-{
-	node<T>* temp_root = current;
-	if (current == NULL)
-	{
-		cout << "Max value in BST: NULL" << endl;
-		return NULL;
-	}
-	else
-	{
-		while (current->right_ch != NULL) //head to the leftmost node, which is the smallest
-		{
-			current = current->right_ch;
-		}
-		cout << "Max value in root " << temp_root->data << " BST is " << current->data << endl;
-		return current;
-	}
-}
-/*template <typename T>
-void bin_tree_main<T>::add_node_after(node<T>* current, T after, T addvalue)
-{
-node <T>* newnode = new node < T > ;
-newnode->data = addvalue;
-newnode->left_ch = NULL;
-newnode->right_ch = NULL;
-node <T>* before_add;
-if (after == root->data)
-{
-if (addvalue < root->data)
-{
-root->left_ch = newnode;
-newnode->left_ch = root->left_ch->left_ch;
-newnode->right_ch = root->left_ch->right_ch;
-newnode->parent = root;
-newnode->left_ch->parent = newnode;
-newnode->right_ch->parent = newnode;
-}
-else
-{
-root->right_ch = newnode;
-newnode->left_ch = root->right_ch->left_ch;
-newnode->right_ch = root->right_ch->right_ch;
-newnode->parent = root;
-newnode->left_ch->parent = newnode;
-newnode->right_ch->parent = newnode;
-}
-}
-else
-{
-before_add = binary_search(root, addvalue);
-if (addvalue < before_add->data)
-{
-before_add->left_ch = newnode;
-newnode->left_ch = before_add->left_ch->left_ch;
-newnode->right_ch = before_add->left_ch->right_ch;
-newnode->parent = before_add;
-newnode->left_ch->parent = newnode;
-newnode->right_ch->parent = newnode;
-}
-else
-{
-before_add->right_ch = newnode;
-newnode->left_ch = before_add->right_ch->left_ch;
-newnode->right_ch = before_add->right_ch->right_ch;
-newnode->parent = before_add;
-newnode->left_ch->parent = newnode;
-newnode->right_ch->parent = newnode;
-}
-}
-}*/
-template <typename T>  //3cases 0chils 1 child and hardest 2 choldren!!!
 void bin_tree_main<T>::delete_node_at(node<T>* current, T value) //value of node to be deleted
 {
-	node<T>* before_delete = NULL;
+	node<T>* before_delete = NULL; //3cases 0chils 1 child and hardest 2 choldren!!!
 	node<T>* deltmp = NULL;
 	node<T>* to_be_deleted = NULL;
 	if (current == NULL)
@@ -552,41 +336,29 @@ void bin_tree_main<T>::delete_node_at(node<T>* current, T value) //value of node
 		}
 	}
 }
-template<typename T>
+template <typename T>
 void bin_tree_main<T>::cleantag(node <T>* current)
 {
 	preorder_traverse(current);
 }
 template <typename T>
-void bin_tree_main<T>::merge_2trees(node<T>*r1,node<T>*r2)
+void bin_tree_main<T>::merge_2trees(node<T>*r1, node<T>*r2)
 {
+	root = NULL;
+	root2_new = NULL;
 	preorder_collect_node(r1);
 	preorder_collect_node(r2);
 	for (int i = 0; i < node_collector.size(); i++)
 	{
+		cout << node_collector[i]<<" ";
 		create_tree(node_collector[i]);
 	}
 }
-template <typename T>
-void bin_tree_main<T>::split_between(T value1,T value2)
-{
-	root2_new = binary_search(value2);
-	node<T>* splittedd=NULL;
-	splittedd = binary_search(value1);
-	if (splittedd->left_ch == root2_new)
-	{
-		splittedd->left_ch = NULL; 
-	}
-	else if (splittedd->right_ch == root2_new)
-	{
-		splittedd->right_ch = NULL;
-	}
-}
-template <typename T>
+/*template <typename T>
 void bin_tree_main<T>::three_wayjoin(node<T>* current1, node<T>* current2)
 {
 	T mid = (current1->data + current2->data) / 2;
-	node<T>* newroot=NULL;
+	node<T>* newroot = NULL;
 	newroot->parent = NULL;
 	newroot->data = mid;
 	if (current1->data < current2->data)
@@ -599,6 +371,183 @@ void bin_tree_main<T>::three_wayjoin(node<T>* current1, node<T>* current2)
 		newroot->left_ch = current2;
 		newroot->right_ch = current1;
 	}
+}*/
+template <typename T>
+void bin_tree_main<T>::split_between(T value1, T value2)
+{
+	root2_new = binary_search(root,value2);
+	node<T>* splittedd = NULL;
+	splittedd = binary_search(root,value1);
+	if (splittedd->left_ch == root2_new)
+	{
+		splittedd->left_ch = NULL;
+	}
+	else if (splittedd->right_ch == root2_new)
+	{
+		splittedd->right_ch = NULL;
+	}
+}
+template<typename T>
+bool bin_tree_main<T>::find_value(node<T>* current) //by DFS recursive
+{
+
+	if (current != NULL)
+	{
+		if (current->data == search_value)
+			return true;
+		else
+		{
+			if (search_value < current->data)
+			{
+				find_value(current->left_ch);
+			}
+			else
+			{
+				find_value(current->right_ch);
+			}
+
+		}
+	}
+	else
+		return false;
+}
+template <typename T>
+node<T>* bin_tree_main<T>::find_value_DFS_iterative() 
+{
+
+	node<T>* current = root;
+	cleantag(current);
+	vector<node<T>*> dfs_itr;
+	dfs_itr.push_back(root);
+	bool find = false;
+	while (dfs_itr.size() > 0)
+	{
+		cout << current->data << " ";
+		if (current->data == search_value)
+		{
+			find = true;
+			break;
+		}
+		if (current->left_ch&&!current->left_ch->visit)
+		{
+			current = current->left_ch;
+			dfs_itr.push_back(current);
+		}
+		else if (current->right_ch&&!current->right_ch->visit)
+		{
+			current = current->right_ch;
+			dfs_itr.push_back(current);
+		}
+		else
+		{
+			current->visit = true;
+			current = current->parent;
+			dfs_itr.pop_back();
+		}
+	}
+	if (find)
+	{
+		return current;
+	}
+	else
+	{
+		return NULL;
+	}
+
+}
+template <typename T>
+node<T>* bin_tree_main<T>::binary_search(node<T>* current, T value)
+{
+	while (current != NULL)
+	{
+		if (value < current->data)
+		{
+			current = current->left_ch;
+		}
+		else if (value > current->data)
+		{
+			current = current->right_ch;
+		}
+		else
+		{
+			return current;
+		}
+	}
+	return NULL;
+
+}
+template <typename T>
+node<T>* bin_tree_main<T>::find_max(node<T>* current)
+{
+	node<T>* temp_root = current;
+	if (current == NULL)
+	{
+		cout << "Max value in BST: NULL" << endl;
+		return NULL;
+	}
+	else
+	{
+		while (current->right_ch != NULL) //head to the leftmost node, which is the smallest
+		{
+			current = current->right_ch;
+		}
+		cout << "Max value in root " << temp_root->data << " BST is " << current->data << endl;
+		return current;
+	}
+}
+template <typename T>
+node<T>* bin_tree_main<T>::find_min(node<T>* current)
+{
+	node<T>* temp_root = current;
+	if (current == NULL)
+	{
+		cout << "Min value in BST: NULL" << endl;
+		return NULL;
+	}
+	else
+	{
+		while (current->left_ch != NULL) //head to the leftmost node, which is the smallest
+		{
+			current = current->left_ch;
+		}
+		cout << "Min value in root " << temp_root->data << " BST is " << current->data << endl;
+		return current;
+	}
+}
+template <typename T>
+node<T>* bin_tree_main<T>::find_succeesor(node<T>* current, T value)
+{
+	node<T>*succeessor = NULL;
+	current= binary_search(current,value);
+	//case 1: no r_subtree , binary search the closest ancestor to make searched node on l_subtree
+	if (current->right_ch == NULL)
+	{
+		while (current->parent->left_ch != current&&current->parent)
+		{
+			current = current->parent;
+		}
+		succeessor = current->parent;
+	}
+	//case 2: has r_subtree
+	else
+	{
+		succeessor = find_min(current->right_ch);
+	}
+	return succeessor;
+}
+template <typename T>
+node<T>* bin_tree_main<T>::least_common_ancestor(T value1, T value2)
+{
+	/*node<T>* current1 = binary_search(root,value1);
+	node<T>* current2 = binary_search(root,value2);
+	while (current1->data != current2->data&&current1->parent&&current2->parent) //this algorithm works bad since two node traverse back at the same time
+	{
+		cout << "Now current is " << current1->data << " " << current2->data << endl;
+		current1 = current1->parent;
+		current2 = current2->parent;
+	}*/
+	node<T>* current1 = NULL;
+	return current1;
 }
 class bin_tree_exec
 {
@@ -608,7 +557,8 @@ public:
 		main_exec();
 	}
 	void main_exec();
-	void forest();
+	template <typename T>
+	void forest(bin_tree_main<T>);
 	template <typename T>
 	void command_control(bin_tree_main<T>);
 private:
@@ -617,14 +567,19 @@ private:
 template <typename T>
 void bin_tree_exec::command_control(bin_tree_main<T> bin_tree)
 {
+	cout << "\nCommand: 1 build tree ,2 preorder traverse ,3 inorder traverse ,4 postorder traverse\n" <<
+		"5 BFS ,6 DFS ,7 find value ,8 find value iterative ,9 binary search ,10 find max ,11 find min\n" <<
+		",13 delete node  ,15 find succeesor ,16 least common ancestor ,18 forest something ,0 quit" << endl;
+	T value1, value2; //for least common ancestor
 	do
 	{
-		cout << "\nCommand: 1 build tree ,2 preorder traverse ,3 inorder traverse ,4 postorder traverse\n" <<
-			"5 BFS ,6 DFS ,7 find value ,8 find value iterative ,9 binary search ,10 find max ,11 find min\n" <<
-			",13 delete node ,14 find predecessor ,15 find succeesor,16 forest execution 0  end" << endl;
+		cout << "\nCommand :";
 		cin >> command;
 		switch (command)
 		{
+		case 0:
+			return;
+			break;
 		case 1:
 			bin_tree.input_data();
 			break;
@@ -703,6 +658,19 @@ void bin_tree_exec::command_control(bin_tree_main<T> bin_tree)
 			cin >> bin_tree.del_value;
 			bin_tree.delete_node_at(bin_tree.root, bin_tree.del_value);
 			break;
+		case 15:
+			cout << "Find succeessor of : ";
+			cin >> bin_tree.search_value;
+			cout<<bin_tree.find_succeesor(bin_tree.root, bin_tree.search_value)->data<<endl;
+			break;
+		case 16:	
+			cout << "Least common ancestor of a_b";
+			cin >> value1 >> value2;
+			cout << "LCA is " << bin_tree.least_common_ancestor(value1, value2)->data << endl;
+			break;
+		case 18:
+			forest(bin_tree);
+			break;
 		default:
 			cout << "Wrong input , try again: " << endl;
 		}
@@ -717,31 +685,82 @@ void bin_tree_exec::main_exec()
 	{
 	case 0:
 	{
-			  bin_tree_main<int> bin_tree_int;
-			  command_control(bin_tree_int);
-			  break;
+		bin_tree_main<int> bin_tree_int;
+		command_control(bin_tree_int);
+		break;
 	}
 	case 1:
 	{
-			  bin_tree_main<double> bin_tree_dou;
-			  command_control(bin_tree_dou);
-			  break;
+		bin_tree_main<double> bin_tree_dou;
+		command_control(bin_tree_dou);
+		break;
 	}
 	case 2:
 	{
-			  bin_tree_main<string> bin_tree_str;
-			  command_control(bin_tree_str);
-			  break;
+		bin_tree_main<string> bin_tree_str;
+		command_control(bin_tree_str);
+		break;
 	}
 	default:
 	{
-			   cout << "Wrong input, please try again.";
-			   break;
+		cout << "Wrong input, please try again.";
+		break;
 	}
 	}
 
 }
-void bin_tree_exec::forest()
-{
 
+template <typename T> //Some forest operations 
+void bin_tree_exec::forest(bin_tree_main<T> bin_tree)
+{
+	T value1, value2;
+	cout << "Forest operations 0 quit ,1 split the BST ,2 traverse the splitted tree1 and tree2 ,3 merge 2 splitted BST from 2 to a BST \n"
+		<< "4 traverse the merged tree from 3 ,5 three way join(also merge from 2) \n";
+	int splitted_tree_selection;
+	do
+	{
+		cout << "Command : ";
+		cin >> command;
+		switch(command)
+		{
+		case 1:
+			cout << "Splitted between: a_b ";
+			cin >> value1 >> value2;
+			bin_tree.split_between(value1, value2);
+			break;
+		case 2:
+			cout << "Traverse the splitted BST ";
+			cout << "0: Node 1:  " << bin_tree.root->data << "   1: Node 2:  " << bin_tree.root2_new->data;
+			cin >> splitted_tree_selection;
+			if (splitted_tree_selection)
+			{
+				cout << "Preorder "; bin_tree.preorder_traverse(bin_tree.root2_new);
+				cout << "Inorder "; bin_tree.inorder_traverse(bin_tree.root2_new);
+				cout << "Postorder "; bin_tree.postorder_traverse(bin_tree.root2_new);
+				cout << endl;
+			}
+			else
+			{
+				cout << "Preorder "; bin_tree.preorder_traverse(bin_tree.root);
+				cout << "Inorder "; bin_tree.inorder_traverse(bin_tree.root);
+				cout << "Postorder "; bin_tree.postorder_traverse(bin_tree.root);
+				cout << endl;
+			}
+			break;
+		case 3:
+			bin_tree.merge_2trees(bin_tree.root, bin_tree.root2_new);
+			break;
+		case 4:
+			cout << "Root is " << bin_tree.root->data << endl;
+			cout << "Preorder "; bin_tree.preorder_traverse(bin_tree.root);
+			cout << "Inorder "; bin_tree.inorder_traverse(bin_tree.root);
+			cout << "Postorder "; bin_tree.postorder_traverse(bin_tree.root);
+			cout << endl;
+			break;
+		case 5:
+			//bin_tree.three_wayjoin(bin_tree.root, bin_tree.root2_new);
+			break;
+		}
+
+	} while (command);
 }
