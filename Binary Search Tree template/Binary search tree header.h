@@ -53,12 +53,14 @@ public:
 	node<T>* find_min(node<T>*);
 	node<T>* find_succeesor(node<T>*, T);
 	node<T>* least_common_ancestor(T, T);
+
+	T operator /(const T&);
 private:
 	node<T>* root;
 	node<T>* root2_new;
 	T search_value, add_value, add_after, del_value;
 	int nodes_cnt, leaves_cnt;
-	vector<T> node_collector;
+	vector<node<T>*> node_collector;
 };
 
 template <typename T>
@@ -169,7 +171,7 @@ void bin_tree_main<T>::preorder_collect_node(node<T>* current)
 	{
 		return;
 	}
-	node_collector.push_back(current->data);
+	node_collector.push_back(current);
 	preorder_traverse(current->left_ch);
 	preorder_traverse(current->right_ch);
 }
@@ -345,33 +347,38 @@ template <typename T>
 void bin_tree_main<T>::merge_2trees(node<T>*r1, node<T>*r2)
 {
 	root = NULL;
-	root2_new = NULL;
 	preorder_collect_node(r1);
 	preorder_collect_node(r2);
+	root = node_collector[0];
 	for (int i = 0; i < node_collector.size(); i++)
 	{
-		cout << node_collector[i]<<" ";
-		create_tree(node_collector[i]);
+		cout << node_collector[i]->data<<" ";
+		create_2nd_tree(node_collector[i]->data);
 	}
 }
-/*template <typename T>
+template <typename T>
 void bin_tree_main<T>::three_wayjoin(node<T>* current1, node<T>* current2)
 {
 	T mid = (current1->data + current2->data) / 2;
-	node<T>* newroot = NULL;
-	newroot->parent = NULL;
-	newroot->data = mid;
+	root = NULL;
+	root->parent = NULL;
+	root->data = mid;
 	if (current1->data < current2->data)
 	{
-		newroot->left_ch = current1;
-		newroot->right_ch = current2;
+		root->left_ch = current1;
+		root->right_ch = current2;
 	}
 	else
 	{
-		newroot->left_ch = current2;
-		newroot->right_ch = current1;
+		root->left_ch = current2;
+		root->right_ch = current1;
 	}
-}*/
+}
+template <typename T>
+T bin_tree_main<T>::operator/(const T& in)
+{
+	return (*this + in)*0.5;
+}
 template <typename T>
 void bin_tree_main<T>::split_between(T value1, T value2)
 {
@@ -538,16 +545,27 @@ node<T>* bin_tree_main<T>::find_succeesor(node<T>* current, T value)
 template <typename T>
 node<T>* bin_tree_main<T>::least_common_ancestor(T value1, T value2)
 {
-	/*node<T>* current1 = binary_search(root,value1);
-	node<T>* current2 = binary_search(root,value2);
-	while (current1->data != current2->data&&current1->parent&&current2->parent) //this algorithm works bad since two node traverse back at the same time
-	{
-		cout << "Now current is " << current1->data << " " << current2->data << endl;
-		current1 = current1->parent;
-		current2 = current2->parent;
-	}*/
-	node<T>* current1 = NULL;
-	return current1;
+	node<T>* current = root;
+	while (1)
+	{	
+		if (current->data > value1&&current->data > value2)
+		{
+			current = current->left_ch;
+		}
+		else if (current->data<value1&&current->data<value2)
+		{
+			current = current->right_ch;
+		}
+		else if ((current->data<value1&&current->data>value2) || (current->data>value1&&current->data<value2))
+		{
+			break;
+		}
+		else if(current->data == value1 || current->data == value2)
+		{
+			break;
+		}
+	}
+	return current;
 }
 class bin_tree_exec
 {
@@ -715,7 +733,7 @@ void bin_tree_exec::forest(bin_tree_main<T> bin_tree)
 {
 	T value1, value2;
 	cout << "Forest operations 0 quit ,1 split the BST ,2 traverse the splitted tree1 and tree2 ,3 merge 2 splitted BST from 2 to a BST \n"
-		<< "4 traverse the merged tree from 3 ,5 three way join(also merge from 2) \n";
+		<< "4 traverse the merged tree from 3  \n";
 	int splitted_tree_selection;
 	do
 	{
@@ -730,7 +748,7 @@ void bin_tree_exec::forest(bin_tree_main<T> bin_tree)
 			break;
 		case 2:
 			cout << "Traverse the splitted BST ";
-			cout << "0: Node 1:  " << bin_tree.root->data << "   1: Node 2:  " << bin_tree.root2_new->data;
+			cout << "0: Node 1:  " << bin_tree.root->data << "   1: Node 2:  " << bin_tree.root2_new->data<<endl;
 			cin >> splitted_tree_selection;
 			if (splitted_tree_selection)
 			{
@@ -748,7 +766,9 @@ void bin_tree_exec::forest(bin_tree_main<T> bin_tree)
 			}
 			break;
 		case 3:
+			
 			bin_tree.merge_2trees(bin_tree.root, bin_tree.root2_new);
+			cout << "Bin tree root is " << bin_tree.root->data<< endl;
 			break;
 		case 4:
 			cout << "Root is " << bin_tree.root->data << endl;
