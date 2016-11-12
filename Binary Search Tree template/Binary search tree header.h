@@ -35,6 +35,7 @@ public:
 	void preorder_collect_node(node<T>*);
 	void preorder_traverse(node<T>*);
 	void inorder_traverse(node<T>*);
+	void inorder_traverse_iterative();
 	void postorder_traverse(node<T>*);
 	void breath_first_search(node<T>*);
 	void delete_node_at(node<T>*, T);
@@ -197,6 +198,40 @@ void bin_tree_main<T>::inorder_traverse(node<T>* current)
 	inorder_traverse(current->left_ch);
 	cout << current->data << " ";
 	inorder_traverse(current->right_ch);
+}
+template <typename T>
+void bin_tree_main<T>::inorder_traverse_iterative()
+{
+	node<T>* current = root;
+	vector<node<T>*> inorder_itr;
+	while (1)
+	{
+		if (current)
+		{
+			inorder_itr.push_back(current);
+			current = current->left_ch;
+		}
+		else
+		{
+			if (inorder_itr.size())
+			{
+				current = inorder_itr.back();
+				inorder_itr.pop_back();
+				cout << "Visit   " << current->data << "           " ;	
+				current = current->right_ch;
+			}
+			else
+			{
+				break;
+			}
+		}
+		cout << "Stack: ";
+		for (int i = 0; i < inorder_itr.size(); i++)
+		{
+			cout<<inorder_itr[i]->data << " ";
+		}
+		cout << endl;
+	}
 }
 template <typename T>
 void bin_tree_main<T>::postorder_traverse(node<T>* current)
@@ -606,6 +641,8 @@ void bin_tree_exec::command_control(bin_tree_main<T> bin_tree)
 			break;
 		case 3:
 			bin_tree.inorder_traverse(bin_tree.root);
+			cout << "And by iterative stack inorder: ";
+			bin_tree.inorder_traverse_iterative();
 			break;
 		case 4:
 			bin_tree.postorder_traverse(bin_tree.root);
