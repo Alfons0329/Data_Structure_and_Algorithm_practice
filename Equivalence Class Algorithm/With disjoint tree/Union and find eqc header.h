@@ -12,19 +12,19 @@ public:
 	void input();
 	void initlialize_itself_as_parent();
 	void union_find();
-	void trace_origin(int);
-	void print_all_equi_class(); 
+	int trace_origin(int);
+	void print_all_equi_class();
 	vector<int> parent;
 };
 
 void equi_class::input()
 {
-	int cnt,tmpx,tmp_parent;
+	int cnt, tmpx, tmp_parent;
 	cout << "Num of elements: ";
 	cin >> cnt;
 	parent.resize(cnt);
 	cout << "Num of relations: ";
-	cin >>cnt;
+	cin >> cnt;
 	initlialize_itself_as_parent();
 	for (int i = 0; i < cnt; i++)
 	{
@@ -35,7 +35,7 @@ void equi_class::input()
 
 		parent[tmpx] = tmp_parent;
 	}
-	
+
 	union_find();
 	print_all_equi_class();
 }
@@ -50,43 +50,51 @@ void equi_class::union_find()
 {
 	for (int i = 0; i < parent.size(); i++)
 	{
-		trace_origin(i);
+		parent[i] = trace_origin(i);
 	}
 }
-void equi_class::trace_origin(int in)
+int equi_class::trace_origin(int in)
 {
-	int leader,in_parent=parent[in]; //store such as 1-->5-->3-->2 we store 1
-	while (in != parent[in])
+	int leader, in_parent = parent[in]; //store such as 1-->5-->3-->2 we store 1
+	while (in != parent[in]) //set the node to the top most leader
 	{
 		in = parent[in];
 	}
 	leader = in;
 	while (parent[in_parent] != leader) //collapsing rule
 	{
+		int tmp = parent[in_parent];
 		in_parent = parent[in_parent];
-		parent[in_parent] = leader;
+		parent[tmp] = leader;
 	}
 
-	
+	return leader;
 }
 void equi_class::print_all_equi_class()
 {
-	cout << "Equivalence classes are: ";
+	int print_cnt = 0;
+	cout << "Parent of each element from 0 to " << parent.size()<<" is ";
 	for (int i = 0; i < parent.size(); i++)
 	{
+		cout << parent[i] << " ";
+	}
+	cout << "Equivalence classes are: ";
+	for (int i = 0; i < parent.size(); i++)
+	{	
 		if (parent[i]>-999)
 		{
-			for (int j = i; j < parent.size(); j++)
+			cout << i << " ";
+			for (int j = i+1; j < parent.size(); j++)
 			{
-				if (parent[j] == parent[i])
+				if (parent[i] == parent[j])
 				{
 					cout << j << " ";
 					parent[j] = -1000;
 				}
 			}
-		}
-		
-		cout << endl;
+			cout << endl;
+		}	
 	}
+
 	system("pause");
 }
