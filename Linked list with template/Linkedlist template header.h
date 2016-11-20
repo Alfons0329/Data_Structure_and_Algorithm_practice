@@ -96,8 +96,8 @@ public:
 	void printlist(node<T>* cur)
 	{
 		int printed_node = 0;
-		cout << "Linked list (size is" << size << ")" << endl;
-		if (!size)
+		cout << "Linked list (size is" << size << ")" ;
+		if (current==NULL)
 		{
 			cout << "NULL" << endl;
 		}
@@ -263,7 +263,7 @@ public:
 	node<T>* remove_ith(node<T>* cur)
 	{
 
-		node<T>* head = cur;
+		node<T>* head_tmp = cur; //store the temp head
 		node<T>* freetmp;
 		int pos;
 		cin >> pos;
@@ -280,7 +280,7 @@ public:
 			if (pos == 0)
 			{
 				size--;
-				head = cur->next;
+				head_tmp = cur->next;  // if the first node is deleted, than head is modified
 			}
 			else
 			{
@@ -290,12 +290,12 @@ public:
 				}
 				freetmp = cur->next;
 				cur->next = cur->next->next;
-				free(freetmp);
+				delete freetmp;
 				size--;
 			}
 		}
 
-		return head;
+		return head_tmp;
 	}
 
 	void main_function_insert_at()
@@ -375,16 +375,42 @@ public:
 		free_all_the_list(head);
 	}
 	template <typename T>
-	void free_all_the_list(node<T>* cur)
+	void free_all_the_list(node<T>* cur)  //O(n) time complexity by free a node by a node.
 	{
 		node<T>* freetmp;
-		while (cur != NULL)
+		if (!size)
 		{
-			freetmp = cur;
-			cur = cur->next;
-			free(freetmp);
+			cout << "Size is 0 , nothing to free !" << endl;
+			return;
+		}
+		else
+		{
+			while (cur != NULL)
+			{
+				freetmp = cur;
+				cur = cur->next;
+				delete freetmp;
+				size = 0;
+			}
+		}
+		
+	}
+	
+	//20161104add the O(1) directly modify the pointer to "simulate" freeing all the list
+	node<T>* free_all_the_list_constant(node<T>* cur)
+	{
+		if (!size)
+		{
+			cout << "Size is 0, nothing to free!"<<endl;
+			cur = NULL;
+		}
+		else
+		{
+			cur->next = NULL; //cur will receive the pointer's memory addreess of head pointer and now change the next to be NULL
+			cur = NULL; //also the 
 			size = 0;
 		}
+		return cur;
 	}
 };
 class exec
@@ -484,6 +510,14 @@ public:
 			case 11:
 				linkedlist.main_function_merge_and_sort();
 				linkedlist.main_function_print();
+				break;
+			case 12:
+				linkedlist.head = linkedlist.free_all_the_list_constant(linkedlist.head);
+				linkedlist.printlist(linkedlist.head);
+				break;
+			default:
+				cout << "Wrong input please try again! ";			
+				break;
 			}
 		}
 	}
@@ -491,6 +525,6 @@ public:
 	{
 		cout << "Command for Linkedlist 0 reverse , 1 Pop_back , 2 Pop_front , 3 Sort ,\n4 Sort+Remove_duplicated ,5 "
 			<< "Remove at ith position , 6 Insert at ith position , 7 Changed all specified value to new ,\n"
-			<< "8 Create second list, 9 free all , 10 Createlist ,11 Merge sort of 2 linkedlists. " << endl;
+			<< "8 Create second list, 9 free all , 10 Createlist ,11 Merge sort of 2 linkedlists ,12free by constant method ." << endl;
 	}
 };
