@@ -138,6 +138,7 @@ void equivalence_main::find()
 			}
 			if (quit1&&quit2) //if quit1 and qui2 both true , means current equivalence class are all included, clean the current one and back to find next eq class relation
 			{
+				cout << "One of the eq class is found!! " << endl;
 				process.clear();
 				break;
 			}
