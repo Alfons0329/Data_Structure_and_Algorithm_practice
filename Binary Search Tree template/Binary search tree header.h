@@ -369,7 +369,7 @@ void bin_tree_main<T>::delete_node_at(node<T>* current, T value) //value of node
 		{
 			keep_data = left_subtree_max->data;
 			delete_node_at(root, left_subtree_max->data);
-			root->data = keep_data;
+			to_be_deleted->data = keep_data;
 		}
 	}
 }
