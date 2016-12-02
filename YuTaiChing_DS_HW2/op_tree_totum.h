@@ -1,4 +1,4 @@
-#include<iostream>
+	#include<iostream>
 using namespace std;
 
 class node{
@@ -195,7 +195,18 @@ void op_tree_totum::deletion(int s){
 	//deal with 3 types
 	if (to_be_deleted->is_threadl&&to_be_deleted->is_threadr) //to be deleted is a leaf
 	{
-
+		if (before_delete->left == to_be_deleted)
+		{
+			before_delete->left = to_be_deleted->left;
+			before_delete->is_threadl = 1;
+			delete to_be_deleted;
+		}
+		else if (before_delete->right == to_be_deleted)
+		{
+			before_delete->right = to_be_deleted->right;
+			before_delete->is_threadr = 1;
+			delete to_be_deleted;
+		}
 	}
 	else if (to_be_deleted->is_threadr) //to_be_deleted has lsub but no rsub
 	{
