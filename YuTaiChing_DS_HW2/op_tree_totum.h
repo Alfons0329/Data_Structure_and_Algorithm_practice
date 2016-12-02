@@ -192,19 +192,67 @@ void op_tree_totum::deletion(int s){
 		keep_data->number = current->number;
 		s = current->number;
 	}
-
-	if (s == root->number)//delete root
+	//deal with 3 types
+	if (to_be_deleted->is_threadl&&to_be_deleted->is_threadr) //to be deleted is a leaf
 	{
+
+	}
+	else if (to_be_deleted->is_threadr) //to_be_deleted has lsub but no rsub
+	{
+		//tree consistency ,connect the before_delete to to_be_deleted->left
+		if (before_delete->left == to_be_deleted)
+		{
+			before_delete->left = to_be_deleted->left;
+		}
+		else if (before_delete->right == to_be_deleted)
+		{
+			before_delete->right = to_be_deleted->left;
+		}
+		//find the lsubmax and connect its rthread to the to_be_delete->rthread
+		current = to_be_deleted->left;
+		while (!current->is_threadr)
+		{
+			current = current->right;
+		}
+		//after find the lsubmax connect ths lsubmax->rthread to to_be_deleted->rthread
+		current->right = to_be_deleted->right;
+		//then free the memory space
+		delete to_be_deleted;
+	}
+	else//to_be_deleted has rsub but no lsub
+	{
+		//tree consistency ,connect the before_delete to to_be_deleted->right
+		if (before_delete->left == to_be_deleted)
+		{
+			before_delete->left = to_be_deleted->right;
+		}
+		else if (before_delete->right == to_be_deleted)
+		{
+			before_delete->right = to_be_deleted->right;
+		}
+		//find the rsubmin and connect its lthread to the to_be_delete->lthread
+		current = to_be_deleted->right;
+		while (!current->is_threadl)
+		{
+			current = current->left;
+		}
+		//after find the rsubmin connect ths rsubmin->lthread to to_be_deleted->lthread
+		current->left = to_be_deleted->left;
+		//then free the memory space
+		delete to_be_deleted;
+	}
+
+
+	/*if (s == root->number)//delete root
+	{ 
 		if (root->is_threadl&&root->is_threadr)//root itself is a leaf
 		{
 			num = 0;
 		}
 		else if (root->is_threadr) //root has left child but no right one
 		{
-			to_be_deleted = root;
-			root = root->left;
 			//binary search the max in the left subtree at root->left and connect the max node to end;
-			node* current = root;
+			node* current = root->left;
 			while (!current->is_threadr)
 			{
 				current = current->right;
@@ -248,7 +296,7 @@ void op_tree_totum::deletion(int s){
 		{
 
 		}
-	}
+	}*/
 
 }
 
