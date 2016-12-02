@@ -192,24 +192,62 @@ void op_tree_totum::deletion(int s){
 		keep_data->number = current->number;
 		s = current->number;
 	}
+
 	if (s == root->number)//delete root
 	{
 		if (root->is_threadl&&root->is_threadr)//root itself is a leaf
 		{
 			num = 0;
 		}
-		else if (root->is_threadr) //has left child but no right one
+		else if (root->is_threadr) //root has left child but no right one
 		{
-
+			to_be_deleted = root;
+			root = root->left;
+			//binary search the max in the left subtree at root->left and connect the max node to end;
+			node* current = root;
+			while (!current->is_threadr)
+			{
+				current = current->right;
+			}
+			cout << "Find the lsubmax of root :" << current->number << endl;
+			//and connect its right ptr to the tail node and also tail node
+			current->right = tail;
+			tail->right = current;
+			//end of connection and delete the to_be_deleted node to free the memory spaace
+			delete to_be_deleted;
 		}
-		else //has right child but no left one
+		else //root has right child but no left one
 		{
-
+			to_be_deleted = root;
+			root = root->right;
+			//binary search the max in the left subtree at root->left and connect the max node to end;
+			node* current = root;
+			while (!current->is_threadl)
+			{
+				current = current->left;
+			}
+			cout << "Find the rsubmin of root :" << current->number << endl;
+			//and connect its right ptr to the tail node and also tail node
+			current->left = head;
+			head->left = current;
+			//end of connection and delete the to_be_deleted node to free the memory spaace
+			delete to_be_deleted;
 		}
 	}
 	else//not delete root
 	{
+		if (to_be_deleted->is_threadl&&to_be_deleted->is_threadr)
+		{
 
+		}
+		else if (to_be_deleted->is_threadr)
+		{
+
+		}
+		else
+		{
+
+		}
 	}
 
 }
