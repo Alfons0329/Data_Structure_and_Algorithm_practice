@@ -242,7 +242,7 @@ void op_tree_totum::deletion(int s){
 		delete to_be_deleted;
 	}
 
-
+	num--;
 	/*if (s == root->number)//delete root
 	{ 
 		if (root->is_threadl&&root->is_threadr)//root itself is a leaf
