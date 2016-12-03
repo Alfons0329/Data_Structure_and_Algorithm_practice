@@ -103,7 +103,7 @@ void op_tree_totum::insertion(int s){
 	}
 	else
 	{
-		cout << "Root is now for insertion " << root->number << endl;
+		cout << "Root is now for insertion " << root->number<<" Head left sould be the min "<<head->left->number<<" Tail right should be the max  "<<tail->right->number << endl;
 		node* before_insert = root;//prev data tmp;
 		while (1)
 		{
@@ -111,7 +111,7 @@ void op_tree_totum::insertion(int s){
 			{
 				if (before_insert->is_threadl)//since the thread is kind of reverse pointer, cant use for binary search
 				{
-					cout << "Is a lthread! break" << endl;
+					//cout << "Is a lthread! break" << endl;
 					break;
 				}
 				before_insert = before_insert->left;
@@ -120,7 +120,7 @@ void op_tree_totum::insertion(int s){
 			{
 				if (before_insert->is_threadr)//since the thread is kind of reverse pointer, cant use for binary search
 				{
-					cout << "Is a rthread! break" << endl;
+					//cout << "Is a rthread! break" << endl;
 					break;
 				}
 				before_insert = before_insert->right;
@@ -171,7 +171,7 @@ void op_tree_totum::deletion(int s){
 		{
 			if (to_be_deleted->is_threadl)
 			{
-				cout << "Not found, no deletion" << endl;
+				//cout << "Not found, no deletion" << endl;
 			}
 
 			before_delete = to_be_deleted;
@@ -181,7 +181,7 @@ void op_tree_totum::deletion(int s){
 		{
 			if (to_be_deleted->is_threadr)
 			{
-				cout << "Not found, no deletion" << endl;
+				//cout << "Not found, no deletion" << endl;
 			}
 
 			before_delete = to_be_deleted;
@@ -203,7 +203,6 @@ void op_tree_totum::deletion(int s){
 		to_be_deleted = to_be_deleted->left;
 		while (!to_be_deleted->is_threadr)
 		{
-			cout << "Current goes to for lsubmax " << current->number << endl;
 			before_delete = to_be_deleted;
 			to_be_deleted = to_be_deleted->right;
 		}
