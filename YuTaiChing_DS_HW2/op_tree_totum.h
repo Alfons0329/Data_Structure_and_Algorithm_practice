@@ -93,7 +93,7 @@ void op_tree_totum::insertion(int s){
 	newnode->number = s;
 	if (root == NULL)
 	{
-		cout << "Root is NULLLLLLLLLLLLLLLLLLLLLLLLLL" << endl;
+		cout << "Root is NULLLLLLLLLLLLLLLLLLLLLLLLLL WTFFFFFFFFFFFFFFFFFFFFFFFFFFF" << endl;
 		root = newnode;
 		root->left = head;
 		root->right = tail;
@@ -103,7 +103,7 @@ void op_tree_totum::insertion(int s){
 	}
 	else
 	{
-		cout << "Root is now for insertion " << root->number<<" Head left sould be the min "<<head->left->number<<" Tail right should be the max  "<<tail->right->number << endl;
+		//cout << "Root is now for insertion " << root->number<<" Head left sould be the min "<<head->left->number<<" Tail right should be the max  "<<tail->right->number << endl;
 		node* before_insert = root;//prev data tmp;
 		while (1)
 		{
@@ -137,7 +137,7 @@ void op_tree_totum::insertion(int s){
 
 			head->left = newnode; //for traverse consistency
 			head->is_threadl = 1;
-			cout << "Insert " << newnode->number << "After " << before_insert->number << " At L SIDE " << endl;
+			//cout << "Insert " << newnode->number << "After " << before_insert->number << " At L SIDE " << endl;
 		}
 		else
 		{
@@ -149,7 +149,7 @@ void op_tree_totum::insertion(int s){
 
 			tail->right = newnode; //for traverse consistency
 			tail->is_threadr = 1;
-			cout << "Insert " << newnode->number << "After " << before_insert->number << " At R SIDE " << endl;
+			//cout << "Insert " << newnode->number << "After " << before_insert->number << " At R SIDE " << endl;
 		}
 
 		num++;
@@ -177,7 +177,7 @@ void op_tree_totum::insertion(int s){
 	current->right = tail;
 
 	//end for the fucking connection loop
-	cout << " Head left sould be the min " << head->left->number << " Tail right should be the max  " << tail->right->number << endl;
+	//cout << " Head left sould be the min " << head->left->number << " Tail right should be the max  " << tail->right->number << endl;
 
 }
 
@@ -194,6 +194,7 @@ void op_tree_totum::deletion(int s){
 			if (to_be_deleted->is_threadl)
 			{
 				cout << "Not found, no deletion" << endl;
+				return;
 			}
 
 			before_delete = to_be_deleted;
@@ -204,12 +205,13 @@ void op_tree_totum::deletion(int s){
 			if (to_be_deleted->is_threadr)
 			{
 				cout << "Not found, no deletion" << endl;
+				return;
 			}
 
 			before_delete = to_be_deleted;
 			to_be_deleted = to_be_deleted->right;
 		}
-		else
+		else if (s==to_be_deleted->number)
 		{
 			break;//found the to_be_delete
 		}
@@ -218,24 +220,21 @@ void op_tree_totum::deletion(int s){
 	//deal with 2 child circumstance
 	if (!to_be_deleted->is_threadl&&!to_be_deleted->is_threadr)
 	{
-		cout << "To be deleted is a 2 child type " << to_be_deleted->number << endl;
+		//cout << "To be deleted is a 2 child type " << to_be_deleted->number << endl;
 		/*find l sub max and replace the to_be_delete node than binary search where the l sub max is,assign its number's value
 		to "s", than delete it as leaf/1 child type*/
 		node* keep_data = to_be_deleted;
+		before_delete = to_be_deleted;
 		to_be_deleted = to_be_deleted->left;
 		while (!to_be_deleted->is_threadr)
 		{
 			before_delete = to_be_deleted;
 			to_be_deleted = to_be_deleted->right;
 		}
-		cout << "Current goes to for lsubmax " << to_be_deleted->number << endl;  cout << "And before lsub max" << before_delete->number << endl;
+		//cout << "Current goes to for lsubmax " << to_be_deleted->number << endl;  cout << "And before lsub max" << before_delete->number << endl;
 		keep_data->number = to_be_deleted->number;
 	}
-	cout << "To be deleted  " << to_be_deleted->number << endl;
-	if (before_delete)
-	{
-		cout << "Before to be deleted  " << before_delete->number << endl;
-	}
+	
 	//deal with 3 types
 	if (to_be_deleted->is_threadl&&to_be_deleted->is_threadr) //to be deleted is a leaf
 	{
@@ -261,7 +260,7 @@ void op_tree_totum::deletion(int s){
 		
 		if (s == root->number)//Delete is same as the root and has only l sub tree ,connect the lsub_max with tail
 		{
-			cout << "Delete is same as the root and has only l sub tree" << endl;
+			//cout << "Delete is same as the root and has only l sub tree" << endl;
 			to_be_deleted = root;
 			root = root->left;
 			current = root;
@@ -272,7 +271,7 @@ void op_tree_totum::deletion(int s){
 			tail->right = current;
 			current->right = tail;
 			current->is_threadr = 1;
-			cout << "Connect tail to " << tail->right->number << endl;
+			//cout << "Connect tail to " << tail->right->number << endl;
 			delete to_be_deleted;
 		}
 		else
@@ -302,7 +301,7 @@ void op_tree_totum::deletion(int s){
 	{		
 		if (s == root->number)
 		{
-			cout << "Delete is same as the root and has only r sub tree" << endl;
+			//cout << "Delete is same as the root and has only r sub tree" << endl;
 			to_be_deleted = root;
 			root = root->right;
 			current = root;
@@ -313,7 +312,7 @@ void op_tree_totum::deletion(int s){
 			head->left = current;
 			current->left = head;
 			current->is_threadl = 1;
-			cout << "Connect thead to " << head->left->number << endl;
+			//cout << "Connect thead to " << head->left->number << endl;
 			delete to_be_deleted;
 		}
 		else
@@ -340,7 +339,29 @@ void op_tree_totum::deletion(int s){
 		}
 		
 	}
-	cout << "Root is now after deletion " << root->number << endl;
+	//loop for connect the head to the min and tail to the max (just in case if something tree inconsistency happened)
+	current = root;
+
+	while (!current->is_threadl)
+	{
+		current = current->left;
+	}
+	head->left = current;
+	current->left = head;
+	current->is_threadl = 1;
+
+	current = root;
+
+	while (!current->is_threadr)
+	{
+		current = current->right;
+	}
+	tail->right = current;
+	current->right = tail;
+
+	//end for the fucking connection loop
+	//cout << " Head left sould be the min " << head->left->number << " Tail right should be the max  " << tail->right->number << endl;
+	//cout << "Root is now after deletion " << root->number << endl;
 	num--;
 
 
