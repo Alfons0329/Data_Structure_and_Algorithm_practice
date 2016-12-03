@@ -125,7 +125,7 @@ void op_tree_totum::insertion(int s){
 				}
 				before_insert = before_insert->right;
 			}
-			
+
 		}
 		if (s < before_insert->number)
 		{
@@ -137,7 +137,7 @@ void op_tree_totum::insertion(int s){
 
 			head->left = newnode; //for traverse consistency
 			head->is_threadl = 1;
-			cout << "Insert " << newnode->number << "After " << before_insert->number<<" At L SIDE "<<endl;
+			cout << "Insert " << newnode->number << "After " << before_insert->number << " At L SIDE " << endl;
 		}
 		else
 		{
@@ -149,7 +149,7 @@ void op_tree_totum::insertion(int s){
 
 			tail->right = newnode; //for traverse consistency
 			tail->is_threadr = 1;
-			cout << "Insert " << newnode->number << "After " << before_insert->number<<" At R SIDE " << endl;
+			cout << "Insert " << newnode->number << "After " << before_insert->number << " At R SIDE " << endl;
 		}
 
 		num++;
@@ -165,7 +165,6 @@ void op_tree_totum::deletion(int s){
 	node* current = root;
 	node* before_delete = root;  //in case of delete the root
 	node* to_be_deleted = root;  //in case of delete the root
-	
 	while (1)//binary search the "to_be_deleted" node and "before deletion node"!
 	{
 		if (s < to_be_deleted->number)
@@ -197,7 +196,7 @@ void op_tree_totum::deletion(int s){
 	//deal with 2 child circumstance
 	if (!to_be_deleted->is_threadl&&!to_be_deleted->is_threadr)
 	{
-		cout << "To be deleted is a 2 child type " << to_be_deleted->number<<endl;
+		cout << "To be deleted is a 2 child type " << to_be_deleted->number << endl;
 		/*find l sub max and replace the to_be_delete node than binary search where the l sub max is,assign its number's value
 		to "s", than delete it as leaf/1 child type*/
 		node* keep_data = to_be_deleted;
@@ -219,9 +218,12 @@ void op_tree_totum::deletion(int s){
 	//deal with 3 types
 	if (to_be_deleted->is_threadl&&to_be_deleted->is_threadr) //to be deleted is a leaf
 	{
-		if (before_delete->left == to_be_deleted)
+		if (s == root->number)
 		{
-			cout << "1,0 case" << endl;
+			num = 0;
+		}
+		else if (before_delete->left == to_be_deleted)
+		{
 			before_delete->left = to_be_deleted->left;
 			before_delete->is_threadl = 1;
 			delete to_be_deleted;
@@ -235,47 +237,71 @@ void op_tree_totum::deletion(int s){
 	}
 	else if (to_be_deleted->is_threadr) //to_be_deleted has lsub but no rsub
 	{
-		//tree consistency ,connect the before_delete to to_be_deleted->left
-		if (before_delete->left == to_be_deleted)
+		
+		if (s == root->number)
 		{
-			before_delete->left = to_be_deleted->left;
+			cout << "Delete is same as the root and has only l sub tree" << endl;
+			to_be_deleted = root;
+			root = root->left;
+			tail->right = root;
+			delete to_be_deleted;
 		}
-		else if (before_delete->right == to_be_deleted)
+		else
 		{
-			before_delete->right = to_be_deleted->left;
-		}
-		//find the lsubmax and connect its rthread to the to_be_delete->rthread
-		current = to_be_deleted->left;
-		while (!current->is_threadr)
-		{
-			current = current->right;
-		}
-		//after find the lsubmax connect ths lsubmax->rthread to to_be_deleted->rthread
-		current->right = to_be_deleted->right;
-		//then free the memory space
-		delete to_be_deleted;
+			//tree consistency ,connect the before_delete to to_be_deleted->left
+			if (before_delete->left == to_be_deleted)
+			{
+				before_delete->left = to_be_deleted->left;
+			}
+			else if (before_delete->right == to_be_deleted)
+			{
+				before_delete->right = to_be_deleted->left;
+			}
+			//find the lsubmax and connect its rthread to the to_be_delete->rthread
+			current = to_be_deleted->left;
+			while (!current->is_threadr)
+			{
+				current = current->right;
+			}
+			//after find the lsubmax connect ths lsubmax->rthread to to_be_deleted->rthread
+			current->right = to_be_deleted->right;
+			//then free the memory space
+			delete to_be_deleted;
+		}	
 	}
-	else//to_be_deleted has rsub but no lsub
-	{
-		//tree consistency ,connect the before_delete to to_be_deleted->right
-		if (before_delete->left == to_be_deleted)
+	else if (to_be_deleted->is_threadl)//to_be_deleted has rsub but no lsub
+	{		
+		if (s == root->number)
 		{
-			before_delete->left = to_be_deleted->right;
+			cout << "Delete is same as the root and has only r sub tree" << endl;
+			to_be_deleted = root;
+			root = root->right;
+			head->left = root;
+			delete to_be_deleted;
 		}
-		else if (before_delete->right == to_be_deleted)
+		else
 		{
-			before_delete->right = to_be_deleted->right;
+			//tree consistency ,connect the before_delete to to_be_deleted->right
+			if (before_delete->left == to_be_deleted)
+			{
+				before_delete->left = to_be_deleted->right;
+			}
+			else if (before_delete->right == to_be_deleted)
+			{
+				before_delete->right = to_be_deleted->right;
+			}
+			//find the rsubmin and connect its lthread to the to_be_delete->lthread
+			current = to_be_deleted->right;
+			while (!current->is_threadl)
+			{
+				current = current->left;
+			}
+			//after find the rsubmin connect ths rsubmin->lthread to to_be_deleted->lthread
+			current->left = to_be_deleted->left;
+			//then free the memory space
+			delete to_be_deleted;
 		}
-		//find the rsubmin and connect its lthread to the to_be_delete->lthread
-		current = to_be_deleted->right;
-		while (!current->is_threadl)
-		{
-			current = current->left;
-		}
-		//after find the rsubmin connect ths rsubmin->lthread to to_be_deleted->lthread
-		current->left = to_be_deleted->left;
-		//then free the memory space
-		delete to_be_deleted;
+		
 	}
 	cout << "Root is now after deletion " << root->number << endl;
 	num--;
