@@ -238,12 +238,20 @@ void op_tree_totum::deletion(int s){
 	else if (to_be_deleted->is_threadr) //to_be_deleted has lsub but no rsub
 	{
 		
-		if (s == root->number)
+		if (s == root->number)//Delete is same as the root and has only l sub tree ,connect the lsub_max with tail
 		{
 			cout << "Delete is same as the root and has only l sub tree" << endl;
 			to_be_deleted = root;
 			root = root->left;
-			tail->right = root;
+			current = root;
+			while (!current->is_threadr)
+			{
+				current = current->right;
+			}
+			tail->right = current;
+			current->right = tail;
+			current->is_threadr = 1;
+			cout << "Connect tail to " << tail->right->number << endl;
 			delete to_be_deleted;
 		}
 		else
@@ -269,14 +277,22 @@ void op_tree_totum::deletion(int s){
 			delete to_be_deleted;
 		}	
 	}
-	else if (to_be_deleted->is_threadl)//to_be_deleted has rsub but no lsub
+	else if (to_be_deleted->is_threadl)//to_be_deleted has rsub but no lsub ,connect the rsub_min with head 
 	{		
 		if (s == root->number)
 		{
 			cout << "Delete is same as the root and has only r sub tree" << endl;
 			to_be_deleted = root;
 			root = root->right;
-			head->left = root;
+			current = root;
+			while (!current->is_threadl)
+			{
+				current = current->left;
+			}
+			head->left = current;
+			current->left = head;
+			current->is_threadl = 1;
+			cout << "Connect thead to " << head->left->number << endl;
 			delete to_be_deleted;
 		}
 		else
@@ -321,6 +337,7 @@ void op_tree_totum::inorder_run(){
 	{
 		while (current != tail)
 		{
+			cout << current->number << " ";
 			if (current->is_threadr)
 			{
 				current = current->right;
@@ -333,7 +350,7 @@ void op_tree_totum::inorder_run(){
 					current = current->left;
 				}
 			}
-			cout << current->number << " ";
+			
 		}
 
 	}
@@ -352,6 +369,7 @@ void op_tree_totum::reverseorder_run(){
 	{
 		while (current != head)
 		{
+			cout << current->number << " ";
 			if (current->is_threadl)
 			{
 				current = current->left;
@@ -364,7 +382,7 @@ void op_tree_totum::reverseorder_run(){
 					current = current->right;
 				}
 			}
-			cout << current->number << " ";
+			
 		}
 	}
 
