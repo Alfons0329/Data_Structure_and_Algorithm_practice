@@ -156,6 +156,28 @@ void op_tree_totum::insertion(int s){
 	}
 
 
+	//loop for connect the head to the min and tail to the max
+	node* current = root;
+
+	while (!current->is_threadl)
+	{
+		current = current->left;
+	}
+	head->left = current;
+	current->left = head;
+	current->is_threadl = 1;
+
+	current = root;
+
+	while (!current->is_threadr)
+	{
+		current = current->right;
+	}
+	tail->right = current;
+	current->right = tail;
+
+	//end for the fucking connection loop
+	cout << " Head left sould be the min " << head->left->number << " Tail right should be the max  " << tail->right->number << endl;
 
 }
 
