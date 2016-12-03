@@ -1,4 +1,4 @@
-	#include<iostream>
+#include<iostream>
 using namespace std;
 
 class node{
@@ -44,10 +44,10 @@ public:
 	void insertion(int s);
 	void deletion(int s);
 	void inorder_run();
+	void inorder_debug(node*);
 	void reverseorder_run();
 	int size();
 
-private:
 	node *root, *head, *tail;
 	int num;//caculate how many nodes in the totum
 };
@@ -77,40 +77,55 @@ void gothrough(node *p){
 	if (p->is_threadr == 0 && p->right != NULL) gothrough(p->right);
 	delete p;
 }
-
+void op_tree_totum::inorder_debug(node* current)
+{
+	if (current == NULL || (current->is_threadl&&current->is_threadr))
+	{
+		return;
+	}
+	inorder_debug(current->left);
+	cout << current->number << " ";
+	inorder_debug(current->right);
+}
 void op_tree_totum::insertion(int s){
 	//TODO: fill in the code to do the insertion of the node with number s
 	node* newnode = new node;
 	newnode->number = s;
 	if (root == NULL)
 	{
+		cout << "Root is NULLLLLLLLLLLLLLLLLLLLLLLLLL" << endl;
 		root = newnode;
 		root->left = head;
 		root->right = tail;
+		head->left = root;
+		tail->right = root;
 		num++;
 	}
 	else
 	{
-		node* current = root;//start traverse and find the root before insertion;
-		node* before_insert = NULL;//prev data tmp;
-
+		cout << "Root is now for insertion " << root->number << endl;
+		node* before_insert = root;//prev data tmp;
 		while (1)
 		{
-			before_insert = current; //back and front ,current will be a node in front of the before insert
-			if (s < current->number)
+			if (s < before_insert->number)
 			{
-				if (current->is_threadl) //since the thread is kind of reverse pointer, cant use for binary search
+				if (before_insert->is_threadl)//since the thread is kind of reverse pointer, cant use for binary search
+				{
+					cout << "Is a lthread! break" << endl;
 					break;
-
-				current = current->left;
+				}
+				before_insert = before_insert->left;
 			}
 			else
 			{
-				if (current->is_threadr) //since the thread is kind of reverse pointer, cant use for binary search
+				if (before_insert->is_threadr)//since the thread is kind of reverse pointer, cant use for binary search
+				{
+					cout << "Is a rthread! break" << endl;
 					break;
-
-				current = current->right;
+				}
+				before_insert = before_insert->right;
 			}
+			
 		}
 		if (s < before_insert->number)
 		{
@@ -122,18 +137,21 @@ void op_tree_totum::insertion(int s){
 
 			head->left = newnode; //for traverse consistency
 			head->is_threadl = 1;
+			cout << "Insert " << newnode->number << "After " << before_insert->number<<" At L SIDE "<<endl;
 		}
 		else
 		{
 			newnode->right = before_insert->right; //ex 5,3,4 4->right (thr) will point to 3->tight
 			newnode->left = before_insert;
 
-			before_insert->right - newnode; //connect the previous node to the new one node
+			before_insert->right = newnode; //connect the previous node to the new one node
 			before_insert->is_threadr = 0; //and thus it is not a thread but a real right ptr
 
 			tail->right = newnode; //for traverse consistency
 			tail->is_threadr = 1;
+			cout << "Insert " << newnode->number << "After " << before_insert->number<<" At R SIDE " << endl;
 		}
+
 		num++;
 	}
 
@@ -145,58 +163,65 @@ void op_tree_totum::deletion(int s){
 	//TODO: fill in the code to do the deletion of the node with number s
 	//binary search the "to_be_deleted" node and "before_delete node"!
 	node* current = root;
-	node* to_be_deleted = NULL;
-	node* before_delete = NULL;
+	node* before_delete = root;  //in case of delete the root
+	node* to_be_deleted = root;  //in case of delete the root
+	
 	while (1)//binary search the "to_be_deleted" node and "before deletion node"!
 	{
-		if (s < current->number)
+		if (s < to_be_deleted->number)
 		{
-			if (current->is_threadl)
+			if (to_be_deleted->is_threadl)
 			{
 				cout << "Not found, no deletion" << endl;
 			}
 
-			before_delete = current;
-			to_be_deleted = current->left;
-			current = current->left;
+			before_delete = to_be_deleted;
+			to_be_deleted = to_be_deleted->left;
 		}
-		else if (s > current->number)
+		else if (s > to_be_deleted->number)
 		{
-			if (current->is_threadr)
+			if (to_be_deleted->is_threadr)
 			{
 				cout << "Not found, no deletion" << endl;
 			}
 
-			before_delete = current;
-			to_be_deleted = current->right;
-			current = current->right;
+			before_delete = to_be_deleted;
+			to_be_deleted = to_be_deleted->right;
 		}
 		else
 		{
 			break;//found the to_be_delete
 		}
 	}
+
 	//deal with 2 child circumstance
 	if (!to_be_deleted->is_threadl&&!to_be_deleted->is_threadr)
 	{
+		cout << "To be deleted is a 2 child type " << to_be_deleted->number<<endl;
 		/*find l sub max and replace the to_be_delete node than binary search where the l sub max is,assign its number's value
 		to "s", than delete it as leaf/1 child type*/
 		node* keep_data = to_be_deleted;
-		current = to_be_deleted->left;
-		while (!current->is_threadr)
+		to_be_deleted = to_be_deleted->left;
+		while (!to_be_deleted->is_threadr)
 		{
-			before_delete = current;
-			to_be_deleted = current->right;
-			current = current->right;
+			cout << "Current goes to for lsubmax " << current->number << endl;
+			before_delete = to_be_deleted;
+			to_be_deleted = to_be_deleted->right;
 		}
-		keep_data->number = current->number;
-		s = current->number;
+		cout << "Current goes to for lsubmax " << to_be_deleted->number << endl;  cout << "And before lsub max" << before_delete->number << endl;
+		keep_data->number = to_be_deleted->number;
+	}
+	cout << "To be deleted  " << to_be_deleted->number << endl;
+	if (before_delete)
+	{
+		cout << "Before to be deleted  " << before_delete->number << endl;
 	}
 	//deal with 3 types
 	if (to_be_deleted->is_threadl&&to_be_deleted->is_threadr) //to be deleted is a leaf
 	{
 		if (before_delete->left == to_be_deleted)
 		{
+			cout << "1,0 case" << endl;
 			before_delete->left = to_be_deleted->left;
 			before_delete->is_threadl = 1;
 			delete to_be_deleted;
@@ -252,69 +277,16 @@ void op_tree_totum::deletion(int s){
 		//then free the memory space
 		delete to_be_deleted;
 	}
-
+	cout << "Root is now after deletion " << root->number << endl;
 	num--;
-	/*if (s == root->number)//delete root
-	{ 
-		if (root->is_threadl&&root->is_threadr)//root itself is a leaf
-		{
-			num = 0;
-		}
-		else if (root->is_threadr) //root has left child but no right one
-		{
-			//binary search the max in the left subtree at root->left and connect the max node to end;
-			node* current = root->left;
-			while (!current->is_threadr)
-			{
-				current = current->right;
-			}
-			cout << "Find the lsubmax of root :" << current->number << endl;
-			//and connect its right ptr to the tail node and also tail node
-			current->right = tail;
-			tail->right = current;
-			//end of connection and delete the to_be_deleted node to free the memory spaace
-			delete to_be_deleted;
-		}
-		else //root has right child but no left one
-		{
-			to_be_deleted = root;
-			root = root->right;
-			//binary search the max in the left subtree at root->left and connect the max node to end;
-			node* current = root;
-			while (!current->is_threadl)
-			{
-				current = current->left;
-			}
-			cout << "Find the rsubmin of root :" << current->number << endl;
-			//and connect its right ptr to the tail node and also tail node
-			current->left = head;
-			head->left = current;
-			//end of connection and delete the to_be_deleted node to free the memory spaace
-			delete to_be_deleted;
-		}
-	}
-	else//not delete root
-	{
-		if (to_be_deleted->is_threadl&&to_be_deleted->is_threadr)
-		{
 
-		}
-		else if (to_be_deleted->is_threadr)
-		{
-
-		}
-		else
-		{
-
-		}
-	}*/
 
 }
 
 void op_tree_totum::inorder_run(){
 	//TODO: travel the tree from the head node to the tail node and output the values
 	//You should NOT use stack or recurtion 
-	node* current = head;
+	node* current = head->left;
 	if (!num)
 	{
 		cout << "Empty tree!" << endl;
@@ -345,7 +317,7 @@ void op_tree_totum::inorder_run(){
 void op_tree_totum::reverseorder_run(){
 	//TODO: travel the tree from the tail node to the head node and output the values
 	//You should NOT use stack or recurtion 
-	node* current = tail;
+	node* current = tail->right;
 	if (!num)
 	{
 		cout << "Empty tree!" << endl;
