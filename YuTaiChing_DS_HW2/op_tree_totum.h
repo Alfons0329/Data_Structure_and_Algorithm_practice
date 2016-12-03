@@ -193,7 +193,7 @@ void op_tree_totum::deletion(int s){
 		{
 			if (to_be_deleted->is_threadl)
 			{
-				//cout << "Not found, no deletion" << endl;
+				cout << "Not found, no deletion" << endl;
 			}
 
 			before_delete = to_be_deleted;
@@ -203,7 +203,7 @@ void op_tree_totum::deletion(int s){
 		{
 			if (to_be_deleted->is_threadr)
 			{
-				//cout << "Not found, no deletion" << endl;
+				cout << "Not found, no deletion" << endl;
 			}
 
 			before_delete = to_be_deleted;
