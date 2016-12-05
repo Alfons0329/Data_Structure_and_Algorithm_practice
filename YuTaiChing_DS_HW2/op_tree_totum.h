@@ -44,7 +44,6 @@ public:
 	void insertion(int s);
 	void deletion(int s);
 	void inorder_run();
-	void inorder_debug(node*);
 	void reverseorder_run();
 	int size();
 
@@ -77,23 +76,12 @@ void gothrough(node *p){
 	if (p->is_threadr == 0 && p->right != NULL) gothrough(p->right);
 	delete p;
 }
-void op_tree_totum::inorder_debug(node* current)
-{
-	if (current == NULL || (current->is_threadl&&current->is_threadr))
-	{
-		return;
-	}
-	inorder_debug(current->left);
-	cout << current->number << " ";
-	inorder_debug(current->right);
-}
 void op_tree_totum::insertion(int s){
 	//TODO: fill in the code to do the insertion of the node with number s
 	node* newnode = new node;
 	newnode->number = s;
 	if (root == NULL)
 	{
-		cout << "Root is NULLLLLLLLLLLLLLLLLLLLLLLLLL WTFFFFFFFFFFFFFFFFFFFFFFFFFFF" << endl;
 		root = newnode;
 		root->left = head;
 		root->right = tail;
@@ -135,8 +123,8 @@ void op_tree_totum::insertion(int s){
 			before_insert->left = newnode; //connect the previous node to the new one node
 			before_insert->is_threadl = 0; //and thus it is not a thread but a real left ptr
 
-			head->left = newnode; //for traverse consistency
-			head->is_threadl = 1;
+			/*head->left = newnode; //for traverse consistency
+			head->is_threadl = 1;*/
 			//cout << "Insert " << newnode->number << "After " << before_insert->number << " At L SIDE " << endl;
 		}
 		else
@@ -147,8 +135,8 @@ void op_tree_totum::insertion(int s){
 			before_insert->right = newnode; //connect the previous node to the new one node
 			before_insert->is_threadr = 0; //and thus it is not a thread but a real right ptr
 
-			tail->right = newnode; //for traverse consistency
-			tail->is_threadr = 1;
+			/*tail->right = newnode; //for traverse consistency
+			tail->is_threadr = 1;*/
 			//cout << "Insert " << newnode->number << "After " << before_insert->number << " At R SIDE " << endl;
 		}
 
