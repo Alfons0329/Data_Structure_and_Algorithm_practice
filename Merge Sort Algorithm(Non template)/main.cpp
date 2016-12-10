@@ -7,7 +7,7 @@ void mergesort_merge(int data[], int start, int mid,const int end)
 	while (left_ptr <= mid&&right_ptr <= end)
 	{
 		if (data[left_ptr] <= data[right_ptr])
-		{
+		
 			temp[index] = data[left_ptr];
 			left_ptr++;
 		}
@@ -38,6 +38,7 @@ void mergesort_merge(int data[], int start, int mid,const int end)
 	{
 		data[i] = temp[i];
 	}
+	delete temp; //in case of memory leak
 }
 void mergesort_split(int data[], int start,int end)
 {
