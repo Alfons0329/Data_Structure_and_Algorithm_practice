@@ -37,22 +37,23 @@ int* heap_sort(int data[], const int start, const int end)
 	int heap_size = end;
 	int* sorted_data;
 	sorted_data = new int[heap_size];
-	for (int i = (heap_size / 2); i >= start; i--)
+	for (int i = (heap_size / 2); i >= start; i--) //there are only half the nodes
+	//are non leaves for swapping
 	{
 		max_heapify(data, i, end);
 	}
 	//do heap sorting
 	for (; heap_size>=1;)
 	{
-		sorted_data[heap_size-1] = data[1];
-		data[1] = data[heap_size];
-		heap_size--;
+		sorted_data[heap_size-1] = data[1];　//this takes the largest from heap structure
+		data[1] = data[heap_size]; //take the last element and re-max heapify
+		heap_size--; // here takes n time
 		for (int i = heap_size / 2; i >= 1; i--) //adjust from the last parent
 		{
-			max_heapify(data,i, heap_size);
+			max_heapify(data,i, heap_size); //max heapify is a tree structure, takes logn time
 		}
 	}
-	return sorted_data;
+	return sorted_data;  //n*logn is the final time complexity
 }
 
 int main()
