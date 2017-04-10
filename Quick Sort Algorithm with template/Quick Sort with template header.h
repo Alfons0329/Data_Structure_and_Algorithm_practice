@@ -51,37 +51,9 @@ int qsort_functions<T>::split(T* data, int start, int end)
 			right_ptr--;
 
 		swap(data[left_ptr], data[right_ptr]);
-		/*//system("pause");
-		cout << "Left " << left_ptr << "Right " << right_ptr << " pvt " << pivot << endl;
-
-		if (data[left_ptr]>pivot)
-		{
-		cout << "Pivot " << data[pivotindex] << "Left " << data[left_ptr] << endl;
-		swap(data[left_ptr], data[pivotindex]);
-		pivotindex = left_ptr;
-		print_arr();
-		}
-		else if (data[right_ptr] < pivot)
-		{
-		cout << "Pivot " << data[pivotindex] << "Rright " << data[right_ptr] << endl;
-		swap(data[right_ptr], data[pivotindex]);
-		pivotindex = right_ptr;
-		print_arr();
-		}
-		if (!flag)
-		{
-		left_ptr++;
-		}
-		else
-		{
-		right_ptr--;
-		}
-		flag = !flag;*/
 	}
 	pivotindex = right_ptr;
-	//cout << "Pivot index " << pivotindex << endl;
 	swap(data[end], data[right_ptr]);
-	//print_arr();
 	return pivotindex;
 }
 template<typename T>
@@ -138,5 +110,3 @@ void start()
 		break;
 	}
 }
-
-
