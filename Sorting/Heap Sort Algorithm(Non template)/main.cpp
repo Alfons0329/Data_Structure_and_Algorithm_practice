@@ -43,9 +43,10 @@ int* heap_sort(int data[], const int start, const int end)
 		max_heapify(data, i, end);
 	}
 	//do heap sorting
-	for (; heap_size>=1;)
+	for(; heap_size>=1;)
 	{
-		sorted_data[heap_size-1] = data[1];　//this takes the largest from heap structure
+        sorted_data[heap_size-1]=data[1];
+		//this takes the largest from heap structure
 		data[1] = data[heap_size]; //take the last element and re-max heapify
 		heap_size--; // here takes n time
 		for (int i = heap_size / 2; i >= 1; i--) //adjust from the last parent
@@ -72,6 +73,5 @@ int main()
 	}
 	sorted_data=heap_sort(data, 1, tc);
 	print_arr(sorted_data, tc);
-	system("pause");
 	return 0;
 }

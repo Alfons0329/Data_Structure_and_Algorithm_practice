@@ -14,8 +14,8 @@ struct Huffman_node
 class Huffman_encoding_main
 {
 public:
-	
-	vector<vector<int>> asciitable_frequency;
+
+	vector<vector<int> > asciitable_frequency;
 	string Huffman_string;
 
 	void start();
@@ -33,7 +33,7 @@ void Huffman_encoding_main:: start()
 void Huffman_encoding_main::input_data()
 {
 	cout << "Enter an English sentence for huffman encoding: \n";
-	getline(cin, Huffman_string); //cin is not suitable for white space 
+	getline(cin, Huffman_string); //cin is not suitable for white space
 	asciitable_frequency.resize(96); //2D array 96 row for the ASCII table space to del
 	for (int i = 0; i < Huffman_string.size(); i++)
 	{
@@ -41,7 +41,7 @@ void Huffman_encoding_main::input_data()
 		{
 			asciitable_frequency[Huffman_string[i] - ' '].push_back(count(Huffman_string.begin(), Huffman_string.end(), Huffman_string[i]));
 		}
-		
+
 	}
 }
 
@@ -87,7 +87,7 @@ void Huffman_encoding_main::build_Huffman_tree()
 	Huffman_node *left_ch, *right_ch, *parent;
 	left_ch = new Huffman_node;
 	right_ch = new Huffman_node;
-	
+
 	left_ch->left_ch = NULL;     //Leaf type nodes at the beginning phase
 	left_ch->right_ch = NULL;	 //Leaf type nodes at the beginning phase
 								 //Leaf type nodes at the beginning phase
@@ -99,13 +99,13 @@ void Huffman_encoding_main::build_Huffman_tree()
 		left_ch = insert_nodes_ptr_container.back();
 		insert_nodes_ptr_container.pop_back();
 
-		right_ch = insert_nodes_ptr_container.back();  	
+		right_ch = insert_nodes_ptr_container.back();
 		insert_nodes_ptr_container.pop_back();
-		
+
 
 		parent = new Huffman_node;
 		parent->freq = left_ch->freq + right_ch->freq; //Merge 2 nodes each with some frequency
-		parent->word = '|'; //Just let it be the internal node of Huffman tree 
+		parent->word = '|'; //Just let it be the internal node of Huffman tree
 		parent->left_ch = left_ch; //from upper lines
 		parent->right_ch = right_ch; //from upper lines
 		insert_nodes_ptr_container.insert(insert_nodes_ptr_container.begin(),parent); //Insert at front since it is with higher combined frequency , the sorting is sorted
@@ -118,7 +118,7 @@ void Huffman_encoding_main::build_Huffman_tree()
 
 void Huffman_encoding_main::print_encoded_code(const Huffman_node* current,string encoded_string) //direction 0 for leftptr and 1 for right ptr
 {
-	
+
 	if (current == NULL)
 	{
 		return;
@@ -128,7 +128,7 @@ void Huffman_encoding_main::print_encoded_code(const Huffman_node* current,strin
 		cout << current->word << "  freq: " << current->freq << "  Huffman code:  " << encoded_string << endl;
 		return;
 	}
-	/*if (current == NULL) 
+	/*if (current == NULL)
 	{
 		return;
 	}
