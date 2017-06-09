@@ -96,11 +96,14 @@ void Huffman_encoding_main::build_Huffman_tree()
 
 	while (insert_nodes_ptr_container.size()!=1) //Last element will be the root
 	{
-		//take the less freq  char to be the deeper node to save time complexity(after the first time of inmitialization, it will sort)
+		sort(insert_nodes_ptr_container.begin(), insert_nodes_ptr_container.end(), compare_node_freq);
+		//sort again since we add parent node to the input list!
+
+		//take the less freq  char to be the deeper node to save time complexity
 		left_ch = insert_nodes_ptr_container.back();
 		insert_nodes_ptr_container.pop_back();
 
-		//take the less freq  char to be the deeper node to save time complexity(after the first time of inmitialization, it will sort)
+		//take the less freq  char to be the deeper node to save time complexity
 		right_ch = insert_nodes_ptr_container.back();
 		insert_nodes_ptr_container.pop_back();
 
@@ -113,7 +116,7 @@ void Huffman_encoding_main::build_Huffman_tree()
 		insert_nodes_ptr_container.insert(insert_nodes_ptr_container.begin(),parent); //Insert at front since it is with higher combined frequency , the sorting is sorted
 		//with "Higher frequency"at the front thus we whould put at the front after merging 2 subndes
 
-		sort(insert_nodes_ptr_container.begin(), insert_nodes_ptr_container.end(), compare_node_freq); //sort again since we add parent node to the input list!
+
 	}
 	print_encoded_code(insert_nodes_ptr_container.back()," ");
 }
