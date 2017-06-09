@@ -96,9 +96,11 @@ void Huffman_encoding_main::build_Huffman_tree()
 
 	while (insert_nodes_ptr_container.size()!=1) //Last element will be the root
 	{
+		//take the less freq  char to be the deeper node to save time complexity(after the first time of inmitialization, it will sort)
 		left_ch = insert_nodes_ptr_container.back();
 		insert_nodes_ptr_container.pop_back();
 
+		//take the less freq  char to be the deeper node to save time complexity(after the first time of inmitialization, it will sort)
 		right_ch = insert_nodes_ptr_container.back();
 		insert_nodes_ptr_container.pop_back();
 
