@@ -1,3 +1,4 @@
+
 void counterGame(vector <string> tests)
 {
     int reduce_value = 0;
